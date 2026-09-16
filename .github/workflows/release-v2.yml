@@ -2,8 +2,7 @@ name: Build and verify SNES revision 2
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '.github/workflows/release-v2.yml'
+    paths: ['.github/workflows/release-v2.yml']
 permissions:
   contents: write
 concurrency:
@@ -15,17 +14,14 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Restore verified baseline and apply reviewed v2 source
+      - name: Restore verified original and apply reviewed v2 source
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import base64, hashlib, lzma, subprocess, json
-          # Earlier experimental revisions remain in Git history and releases.
-          # Use the authenticated original snapshot as the exact patch base.
+          import base64,hashlib,lzma,subprocess,json
           packed=b''.join(base64.b64decode(p.read_text().strip(),validate=True) for p in sorted(Path('import').glob('source-*.b64')))
           assert hashlib.sha256(packed).hexdigest()=='139c90a982b074caf5e393f53be7ebb3adec28921f8c037fd902d9e1a32069ca'
-          files=json.loads(lzma.decompress(packed))
-          scores=json.loads(files['tools/original_scores.json'])
+          files=json.loads(lzma.decompress(packed));scores=json.loads(files['tools/original_scores.json'])
           for song in scores.values():
               if isinstance(song.get('notes'),dict):
                   c=song['notes'];song['notes']=[{k:v[i] for k,v in c.items() if v[i] is not None} for i in range(len(next(iter(c.values()))))]
@@ -36,16 +32,14 @@ jobs:
               p.parent.mkdir(parents=True,exist_ok=True);p.write_text(content)
           for name in ('tools/remaster_graphics.py','tests/validate_revision.py','docs/REVISION-2.md'):
               if name not in files: Path(name).unlink(missing_ok=True)
-          encoded=''.join(p.read_text().strip() for p in sorted(Path('revisions/v2').glob('patch-*.b64')))
-          raw=base64.b64decode(encoded,validate=True)
+          raw=base64.b64decode(''.join(p.read_text().strip() for p in sorted(Path('revisions/v2').glob('patch-*.b64'))),validate=True)
           assert hashlib.sha256(raw).hexdigest()=='fa42d130bf1dd19bfced9746c20d5d44d492ed432da463185966a3072c73e1d8'
           p=Path('/tmp/revision-2.patch');p.write_bytes(lzma.decompress(raw))
-          subprocess.run(['git','apply','--check',str(p)],check=True)
-          subprocess.run(['git','apply',str(p)],check=True)
+          subprocess.run(['git','apply','--check',str(p)],check=True);subprocess.run(['git','apply',str(p)],check=True)
           p=Path('tests/validate_revision.py')
-          p.write_text(p.read_text().replace("'/mnt/data/releases/v2-refined.png'","str(R/'build/v2-refined.png')"))
+          p.write_text(p.read_text().replace("report['core']=e.summary()","e.save_image(str(R/'build/v2-refined.png'),scale=3)\nreport['core']=e.summary()"))
           PY
-      - name: Build pinned compiler and emulator
+      - name: Build pinned compiler and Snes9x
         run: |
           git clone -q --depth 1 --branch V2.19 https://github.com/cc65/cc65.git "$RUNNER_TEMP/cc65"
           test "$(git -C "$RUNNER_TEMP/cc65" rev-parse HEAD)" = 555282497c3ecf8b313d87d5973093af19c35bd5
@@ -56,7 +50,7 @@ jobs:
           make -s -C "$RUNNER_TEMP/snes9x/libretro" -j4 > "$RUNNER_TEMP/snes9x.log" 2>&1
           echo "SNES_CORE=$RUNNER_TEMP/snes9x/libretro/snes9x_libretro.so" >> "$GITHUB_ENV"
           python3 -m pip install 'Pillow==12.2.0' 'numpy>=1.24,<3'
-      - name: Rebuild assets and compare with the locally verified ROM
+      - name: Regenerate assets, verify exact ROM and exercise controls
         run: |
           python3 tools/build_content.py
           python3 tools/remaster_graphics.py
@@ -64,45 +58,33 @@ jobs:
           python3 tools/build.py
           python3 tests/validate_rom.py
           python3 tests/validate_graphics.py
-          python3 - <<'PY'
-          from pathlib import Path
-          import hashlib
-          b=Path('build/sinfonia-castlevanica.sfc').read_bytes()
-          assert hashlib.sha256(b).hexdigest()=='133fb85421f14d68b861e073a0de0d78654465dfd084f83c0231c0bc602a33bb'
-          print('ROM is byte-identical to the locally tested revision 2.')
-          PY
-      - name: Verify input, animation timing, jumping, doorway and SRAM in Snes9x
-        run: python3 tests/validate_revision.py
-      - name: Prepare versioned ROM, source and test report
+          python3 -c "import pathlib,hashlib; assert hashlib.sha256(pathlib.Path('build/sinfonia-castlevanica.sfc').read_bytes()).hexdigest()=='133fb85421f14d68b861e073a0de0d78654465dfd084f83c0231c0bc602a33bb'"
+          python3 tests/validate_revision.py
+      - name: Package ROM, source, preview and report
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import shutil, hashlib, json, zipfile
+          import shutil,hashlib,json,zipfile
           d=Path('releases/v2.0');d.mkdir(parents=True,exist_ok=True)
-          for ext in ('smc','sfc'):
-              shutil.copyfile('build/sinfonia-castlevanica.sfc',d/f'sinfonia-castlevanica-snes-v2.{ext}')
-          for src in ('build/revision-tests.json','build/rom-info.json','build/v2-refined.png','docs/REVISION-2.md'):
-              shutil.copyfile(src,d/Path(src).name)
+          for ext in ('smc','sfc'):shutil.copyfile('build/sinfonia-castlevanica.sfc',d/f'sinfonia-castlevanica-snes-v2.{ext}')
+          for src in ('build/revision-tests.json','build/rom-info.json','build/v2-refined.png','docs/REVISION-2.md'):shutil.copyfile(src,d/Path(src).name)
           with zipfile.ZipFile(d/'sinfonia-snes-v2-codigo.zip','w',zipfile.ZIP_DEFLATED) as z:
               for root in ('src','tools','assets','docs','tests'):
                   for p in sorted(Path(root).rglob('*')):
-                      if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ('.pyc','.srm'):
-                          z.write(p,'sinfonia-snes-v2/'+str(p))
-              for name in ('README.md','Makefile','lorom.cfg','requirements-assets.txt','.gitignore'):
-                  z.write(name,'sinfonia-snes-v2/'+name)
-              for name in ('sinfonia-castlevanica.sfc','rom-info.json','labels.json','labels.txt','rom.map','revision-tests.json'):
-                  z.write('build/'+name,'sinfonia-snes-v2/build/'+name)
+                      if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ('.pyc','.srm'):z.write(p,'sinfonia-snes-v2/'+str(p))
+              for name in ('README.md','Makefile','lorom.cfg','requirements-assets.txt','.gitignore'):z.write(name,'sinfonia-snes-v2/'+name)
+              for name in ('sinfonia-castlevanica.sfc','rom-info.json','labels.json','labels.txt','rom.map','revision-tests.json'):z.write('build/'+name,'sinfonia-snes-v2/build/'+name)
               z.write(d/'sinfonia-castlevanica-snes-v2.smc','sinfonia-snes-v2/sinfonia-castlevanica-snes-v2.smc')
           files=[{'path':p.name,'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(d.iterdir()) if p.is_file()]
           (d/'SHA256.json').write_text(json.dumps(files,indent=2)+'\n')
           PY
-      - name: Commit verified revision without removing the original release
+      - name: Publish verified source and ROM, keeping older versions
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add README.md Makefile lorom.cfg requirements-assets.txt src tools assets tests docs releases/v2.0
           git add -f build/sinfonia-castlevanica.sfc build/rom-info.json build/labels.json build/labels.txt build/rom.map build/revision-tests.json
-          git diff --cached --quiet || git commit -m 'Release SNES v2: complete door art, 32x48 hero, fluid controls and verified SRAM'
+          git diff --cached --quiet || git commit -m 'Release SNES v2: complete doors, 32x48 hero, fluid controls and verified SRAM'
           git push origin HEAD:main
       - uses: actions/upload-artifact@v4
         with:
