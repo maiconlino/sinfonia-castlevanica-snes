@@ -1,0 +1,66 @@
+name: Import and preserve original SNES source
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/import-baseline.yml']
+permissions:
+  contents: write
+concurrency:
+  group: native-source-import
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify and restore exact source snapshot
+        run: |
+          python - <<'PY'
+          import base64, hashlib, io, json, pathlib, tarfile
+          root = pathlib.Path('transport')
+          manifest = json.loads((root/'baseline.json').read_text())
+          payload = ''.join((root/p).read_text().strip() for p in manifest['parts'])
+          archive = base64.b64decode(payload, validate=True)
+          actual = hashlib.sha256(archive).hexdigest()
+          assert actual == manifest['sha256'], (actual, manifest['sha256'])
+          with tarfile.open(fileobj=io.BytesIO(archive), mode='r:xz') as t:
+              assert len(t.getmembers()) == manifest['file_count']
+              assert all(m.isfile() and not m.name.startswith(('.', '/')) or m.name == '.gitignore' for m in t.getmembers())
+              t.extractall('.', filter='data')
+          print('Verified and restored', manifest['file_count'], 'source files')
+          PY
+      - name: Install build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cc65
+          python -m pip install 'Pillow>=10,<13' 'numpy>=1.26,<3'
+      - name: Generate native graphics, data and sound
+        run: |
+          python tools/build_content.py
+          python tools/generate_graphics.py
+          python tools/build_audio.py
+          python tools/build.py
+          python tests/validate_rom.py
+      - name: Preserve compiled baseline and commit full readable source
+        run: |
+          mkdir -p releases/v1-original
+          cp build/sinfonia-castlevanica.sfc releases/v1-original/sinfonia-castlevanica-v1.sfc
+          cp build/sinfonia-castlevanica.sfc releases/v1-original/sinfonia-castlevanica-v1.smc
+          cp build/rom-info.json releases/v1-original/rom-info.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src tools tests docs assets Makefile README.md lorom.cfg requirements-assets.txt .gitignore
+          git add -f releases/v1-original
+          if ! git diff --cached --quiet; then
+            git commit -m 'Preserve complete original SNES project with generated assets and ROM'
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: original-snes-build
+          path: releases/v1-original/
+          retention-days: 7
