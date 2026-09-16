@@ -1,0 +1,67 @@
+name: Prepare native SNES toolchain
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/prepare-toolchain.yml'
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - name: Install assembler and build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cc65 build-essential zlib1g-dev
+          mkdir -p artifact/toolchain
+          cp /usr/bin/ca65 /usr/bin/ld65 artifact/toolchain/
+      - name: Build pinned Snes9x libretro core
+        run: |
+          git clone --depth 1 --branch 1.63 https://github.com/snes9xgit/snes9x.git snes9x
+          make -C snes9x/libretro -j2
+          cp snes9x/libretro/snes9x_libretro.so artifact/toolchain/
+          git -C snes9x rev-parse HEAD > artifact/toolchain/snes9x-commit.txt
+          ca65 --version 2> artifact/toolchain/ca65-version.txt
+      - name: Inspect the existing public browser game without changing it
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import pathlib, urllib.request, urllib.parse, re, json
+          base = 'https://sinfonia-castlevanica-futuristica.maiconheverton.chatgpt.site/'
+          out = pathlib.Path('artifact/browser-public'); out.mkdir(parents=True, exist_ok=True)
+          pending = [base, urllib.parse.urljoin(base, 'demo/')]; seen = set(); report=[]
+          while pending and len(seen) < 100:
+              url = pending.pop(0)
+              if url in seen: continue
+              seen.add(url)
+              try:
+                  req=urllib.request.Request(url, headers={'User-Agent':'SinfonIA-owner-backup/1.0'})
+                  with urllib.request.urlopen(req,timeout=25) as r:
+                      body=r.read(12000000); final=r.url; ct=r.headers.get('Content-Type','')
+                  if urllib.parse.urlparse(final).netloc != urllib.parse.urlparse(base).netloc:
+                      report.append({'url':url,'redirected_outside_site':final});continue
+                  path=urllib.parse.urlparse(url).path.lstrip('/')
+                  if not path or path.endswith('/'): path+='index.html'
+                  target=out/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(body)
+                  report.append({'url':url,'path':path,'bytes':len(body),'type':ct})
+                  if any(x in ct for x in ['html','javascript','css','json']):
+                      text=body.decode('utf8',errors='replace')
+                      refs=re.findall(r'''(?:src|href)\s*=\s*["']([^"']+)["']|(?:fetch|import)\s*\(\s*["']([^"']+)["']|["']([^"']+\.(?:js|css|json|png|webp|svg|mid|zip|gz|woff2?))(?:\?[^"']*)?["']''',text)
+                      for groups in refs:
+                          ref=next((x for x in groups if x),'')
+                          u=urllib.parse.urljoin(url,ref)
+                          p=urllib.parse.urlparse(u)
+                          if p.netloc==urllib.parse.urlparse(base).netloc and not p.path.startswith(('/api/','/admin')) and u not in seen:
+                              pending.append(u)
+              except Exception as e: report.append({'url':url,'error':str(e)})
+          (out/'download-report.json').write_text(json.dumps(report,indent=2))
+          print(json.dumps(report,indent=2))
+          PY
+      - name: Upload tools and public-site backup for local verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinfonia-toolchain-and-public-backup
+          path: artifact/
+          retention-days: 14
