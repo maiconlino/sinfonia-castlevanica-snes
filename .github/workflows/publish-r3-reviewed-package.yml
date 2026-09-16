@@ -1,0 +1,35 @@
+name: Publish R3 reviewed package
+on:
+  workflow_dispatch:
+  push:
+    branches: ['release/snes-r3']
+    paths: ['.github/workflows/publish-r3-reviewed-package.yml']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm current ROM, tests and source match
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,zipfile
+          expected='70c0cffe1840e218715d4b27721bec689c0f1141b95496d9a7d786ea045a8f3e'
+          assert hashlib.sha256(Path('dist/r3/sinfonia-castlevanica-snes-r3.smc').read_bytes()).hexdigest()==expected
+          assert json.loads(Path('docs/r3/validation.json').read_text())['rom_sha256']==expected
+          assert json.loads(Path('docs/r3/first-route.json').read_text())['first_boss_defeated']
+          assert json.loads(Path('docs/r3/upper-route.json').read_text())['passed']
+          with zipfile.ZipFile('dist/r3/sinfonia-snes-r3-codigo.zip') as z:
+              for name in ['src/main.s','src/movement.s','src/edges_r3.s','src/enemies_r3.s','src/bosses_r3.s','tools/build_r3_assets.py']:
+                  assert z.read(name)==Path(name).read_bytes(), name
+          print('Verified exact R3 ROM and matching reviewed sources')
+          PY
+      - name: Publish separate reviewed tag without moving any existing tag
+        run: |
+          gh release view r3-review-20260916 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || gh release create r3-review-20260916 --repo "$GITHUB_REPOSITORY" --target "$(git rev-parse HEAD)" --prerelease --title 'SinfonIA SNES R3 revisada: saídas laterais e dez chefes distintos' --notes-file docs/REVISAO-R3.md
+          gh release upload r3-review-20260916 --repo "$GITHUB_REPOSITORY" dist/r3/sinfonia-castlevanica-snes-r3.smc dist/r3/sinfonia-castlevanica-snes-r3.sfc dist/r3/sinfonia-snes-r3-codigo.zip dist/r3/sinfonia-snes-r3-testes.json dist/r3/SHA256SUMS --clobber
