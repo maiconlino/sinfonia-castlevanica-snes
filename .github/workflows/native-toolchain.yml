@@ -1,0 +1,36 @@
+name: Native SNES toolchain
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/native-toolchain.yml'
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Build pinned ca65 and ld65
+        run: |
+          set -eux
+          mkdir -p export/bin
+          git clone --depth 1 --branch V2.19 https://github.com/cc65/cc65.git cc65
+          test "$(git -C cc65 rev-parse HEAD)" = 555282497c3ecf8b313d87d5973093af19c35bd5
+          make -C cc65 -j2 bin/ca65 bin/ld65
+          cp cc65/bin/ca65 cc65/bin/ld65 export/bin/
+          cp cc65/LICENSE export/CC65-LICENSE.txt
+      - name: Build Snes9x 1.63 libretro test core
+        run: |
+          set -eux
+          git clone --depth 1 --branch 1.63 https://github.com/snes9xgit/snes9x.git snes9x
+          git -C snes9x rev-parse HEAD > export/SNES9X-COMMIT.txt
+          make -C snes9x/libretro -j2
+          cp snes9x/libretro/snes9x_libretro.so export/
+          cp snes9x/LICENSE export/SNES9X-LICENSE.txt
+          (cd export && sha256sum bin/* *.so > SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-snes-build-tools
+          path: export/
+          retention-days: 7
