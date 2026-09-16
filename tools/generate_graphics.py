@@ -52,7 +52,7 @@ def tilefont(c):
  im=img(8,8)
  for y,bits in enumerate(FONT.get(c.upper(),[])):
   for x in range(5):
-   if bits&(1<<(4-x)): im.putpixel((x+1,y+1),15)
+   if bits&(1<<(4-x)): im.putpixel((x+1,y),15)
  return im
 
 def common_tiles():

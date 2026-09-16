@@ -95,6 +95,17 @@ soundarg: .res 2
 soundready: .res 2
 prevy: .res 2
 respawn: .res 2
+; V2 transient motion and animation, deliberately outside battery save state.
+vx: .res 2
+xsub: .res 2
+ysub: .res 2
+grounded: .res 2
+coyote: .res 2
+jumpbuffer: .res 2
+animclock: .res 2
+heroindex: .res 2
+uploadedhero: .res 2
+roomflash: .res 2
 
 .segment "STATE"
 state_begin:
@@ -132,26 +143,6 @@ enemyy: .res 8
 enemyhp: .res 8
 enemycool: .res 8
 enemykind: .res 8
-; Revision 1.1 transient state. Kept outside battery-save layout.
-vx: .res 2
-xfrac: .res 2
-yfrac: .res 2
-grounded: .res 2
-coyote: .res 2
-jumpbuffer: .res 2
-landtimer: .res 2
-walkphase: .res 2
-heroframe: .res 2
-heroloaded: .res 2
-hero_originx: .res 2
-hero_originy: .res 2
-hero_part: .res 2
-motiontemp: .res 2
-particlephase: .res 2
-bossartframe: .res 2
-bossartloaded: .res 2
-boss_part: .res 2
-boss_originx: .res 2
 
 .segment "CODE"
 .a8
@@ -226,9 +217,7 @@ Reset:
  jsr AudioInit
  jsr LoadObjects
  lda #$ffff
- sta heroloaded
- sta bossartloaded
- lda #$ffff
+ sta uploadedhero
  sta oldregion
  jsr CheckSave
  lda #0
@@ -249,7 +238,6 @@ MainLoop:
  jsr WaitFrame
  jsr ReadPad
  jsr UploadFrame
- jsr TryMusic
  inc frame
  lda mode
  jeq TitleTick
@@ -366,59 +354,8 @@ UploadFrame:
  sta $420b
  rep #$20
  .a16
- jsr UploadHeroFrame
- jsr UploadBossFrame
+ jsr UploadHero
  rts
-UploadHeroFrame:
- lda heroframe
- cmp heroloaded
- jeq @done
- sta heroloaded
- ; 1024 bytes per pose, sixteen poses contained in LoROM bank13.
- xba
- asl
- asl
- clc
- adc #.loword(HeroFrames)
- sta src
- lda #.bankbyte(HeroFrames)
- sta src+2
- lda #1024
- sta t0
- lda #$4000
- sta t1
- jsr DMAVRAM
-@done: rts
-UploadBossFrame:
- lda bosshp
- jeq @done
- lda bossartframe
- cmp bossartloaded
- jeq @done
- sta bossartloaded
- cmp #16
- jcc @bank0
- sec
- sbc #16
- ldx #.bankbyte(BossFrames1)
- jmp @source
-@bank0:
- ldx #.bankbyte(BossFrames0)
-@source:
- stx src+2
- xba
- asl
- asl
- asl
- clc
- adc #$8000
- sta src
- lda #2048
- sta t0
- lda #$5000
- sta t1
- jsr DMAVRAM
-@done: rts
 Blank:
  sep #$20
  .a8
@@ -460,6 +397,43 @@ DMAVRAM:
  rep #$20
  .a16
  rts
+; Stream only a changed 32x48 hero pose, six 128-byte tile rows.
+; Fixed OBJ tile positions allow animation without changing collision boxes.
+UploadHero:
+ lda heroindex
+ cmp uploadedhero
+ jeq @done
+ sta uploadedhero
+ xba
+ sta t0
+ asl
+ clc
+ adc t0
+ clc
+ adc #.loword(HeroFrames)
+ sta src
+ lda #.bankbyte(HeroFrames)
+ sta src+2
+ lda #$4000
+ sta t1
+ ldy #6
+@row:
+ lda #128
+ sta t0
+ jsr DMAVRAM
+ lda src
+ clc
+ adc #128
+ sta src
+ lda t1
+ clc
+ adc #$0100
+ sta t1
+ dey
+ jne @row
+@done:
+ rts
+
 LoadObjects:
  lda #.loword(ObjCHR)
  sta src
@@ -675,7 +649,7 @@ PrintNumber:
  lda t2
  clc
  adc #16
- ora #$3c00
+ ora #$2000
  sta MAP,x
  inx
  inx
@@ -723,7 +697,7 @@ NameItem:
 TitleScreen:
  jsr BaseMap
  jsr ClearOAM
- lda #$3c00
+ lda #$2000
  sta textcolor
  TEXT Title1,4,5
  TEXT Title2,6,3
@@ -828,14 +802,14 @@ Recalculate:
 @done:rts
 EnterRoom:
  jsr Blank
+ lda #150
+ sta roomflash
  stz vx
- stz xfrac
- stz yfrac
+ stz xsub
+ stz ysub
  stz coyote
  stz jumpbuffer
- stz landtimer
- stz walkphase
- stz heroframe
+ stz animclock
  lda #1
  sta grounded
  lda #0
@@ -967,17 +941,11 @@ RoomMap:
 @hud: sta MAP,x
  inx
  inx
- cpx #256
+ cpx #128
  jne @hud
- ldx #(25*64)
-@foot: sta MAP,x
- inx
- inx
- cpx #(28*64)
- jne @foot
  ; The walking surface is tile row23, pixel184.
  ldx #(23*64)
- lda #$3860
+ lda #96
 @floor: sta MAP,x
  inx
  inx
@@ -987,11 +955,11 @@ RoomMap:
  lda room
  and #1
  jeq @platformA
- ldx #(16*64+8*2)
+ ldx #(17*64+8*2)
  jmp @platform
-@platformA: ldx #(16*64+6*2)
+@platformA: ldx #(17*64+6*2)
 @platform:
- lda #$3861
+ lda #97
  ldy #7
 @pl: sta MAP,x
  inx
@@ -1005,8 +973,8 @@ RoomMap:
  inx
  dey
  jne @pl2
- ; Each exit is a complete 32x48 door with 24 distinct 8x8 pieces.
- ; Hidden exits remain visually undisclosed until found by attacking.
+ ; Each logical exit is a single 32x48, 24-tile coherent doorway.
+ ; Hidden passages remain masonry until the player discovers them.
  stz exitidx
 @door:
  lda room
@@ -1021,7 +989,7 @@ RoomMap:
  jeq @next
  lda f:room_exit_secret,x
  and #$ff
- jeq @normaldoor
+ jeq @visible
  lda room
  asl
  tax
@@ -1031,34 +999,7 @@ RoomMap:
  lda secrets,x
  and BitMasks,y
  jeq @next
- lda #176
- jmp @drawdoor
-@normaldoor:
- ; Locked alcoves are visually closed until all required items are owned.
- stx t4
- lda f:room_exit_req0,x
- jsr DoorItemOwned
- jcc @closeddoor
- ldx t4
- lda f:room_exit_req1,x
- jsr DoorItemOwned
- jcc @closeddoor
- ldx t4
- lda f:room_exit_req2,x
- jsr DoorItemOwned
- jcc @closeddoor
- ldx t4
- lda f:room_exit_req3,x
- jsr DoorItemOwned
- jcc @closeddoor
- lda #128
- jmp @drawdoor
-@closeddoor:
- lda #152
-@drawdoor:
- ora #$3800
- sta t0
- ; x centers:32,96,160,224. Left edge:16,80,144,208.
+@visible:
  lda exitidx
  asl
  asl
@@ -1067,24 +1008,27 @@ RoomMap:
  clc
  adc #(17*64+2*2)
  tax
- ldy #6
-@doorrow:
- lda t0
- sta MAP,x
- inc
- sta MAP+2,x
- inc
- sta MAP+4,x
- inc
- sta MAP+6,x
- inc
+ lda #128
  sta t0
+ lda #6
+ sta t1
+@dr:
+ ldy #4
+@dc:
+ lda t0
+ ora #$2000
+ sta MAP,x
+ inc t0
+ inx
+ inx
+ dey
+ jne @dc
  txa
  clc
- adc #64
+ adc #56
  tax
- dey
- jne @doorrow
+ dec t1
+ jne @dr
 @next:
  inc exitidx
  lda exitidx
@@ -1094,31 +1038,12 @@ RoomMap:
  lda f:room_type,x
  and #1
  jeq @notshrine
- lda #$3c6e
+ lda #$206e
  sta MAP+(21*64+14*2)
  sta MAP+(22*64+14*2)
- lda #$3c6d
+ lda #$206d
  sta MAP+(22*64+15*2)
 @notshrine:
- lda #$3c00
- sta textcolor
- lda #(3*64+2)
- sta textpos
- lda room
- jsr NameRoom
- TEXT Footer1,27,1
- rts
-DoorItemOwned:
- and #$ff
- cmp #255
- jeq @yes
- asl
- tax
- lda inventory,x
- jeq @no
-@yes: sec
- rts
-@no: clc
  rts
 GameTick:
  lda pressed
@@ -1178,6 +1103,10 @@ GameTick:
  jsr PlayerDied
 @done:rts
 TickTimers:
+ lda roomflash
+ jeq :+
+ dec roomflash
+:
  ldx #inv
 @timer:
  ; Timers are intentionally updated explicitly, never across non-timer fields.
@@ -1243,18 +1172,12 @@ TickTimers:
  inc hp
 @done:rts
 MovePlayer:
- ; Signed 8.8 fixed-point velocity and fractions, one update per VBlank.
  lda py
  sta prevy
- lda jumpbuffer
- jeq :+
- dec jumpbuffer
-: lda landtimer
- jeq :+
- dec landtimer
-: lda grounded
+ inc animclock
+ lda grounded
  jeq @airtime
- lda #6
+ lda #5
  sta coyote
  jmp @buffer
 @airtime:
@@ -1262,84 +1185,84 @@ MovePlayer:
  jeq @buffer
  dec coyote
 @buffer:
- lda pressed
+ lda jumpbuffer
+ jeq :+
+ dec jumpbuffer
+: lda pressed
  and #JOY_B
- jeq @speed
+ jeq @dash
  lda #6
  sta jumpbuffer
-@speed:
- lda #$0200
- sta t0
- lda form
- cmp #1
- jne @boost
- lda #$02c0
- sta t0
-@boost:
- lda accessory
- cmp #28
- jne @armor
- lda t0
- clc
- adc #$0040
- sta t0
-@armor:
- lda armor
- cmp #13
- jne @dash
- lda t0
- clc
- adc #$0020
- sta t0
 @dash:
  lda pressed
  and #JOY_L
- jeq @directions
+ jeq @speed
  lda dashcd
- jne @directions
+ jne @speed
  lda #12
  sta dash
  lda #45
  sta dashcd
  lda #18
  sta inv
-@directions:
- lda dash
- jeq @input
- lda #$0480
- sta vx
+@speed:
+ lda #512
+ sta t0
+ lda form
+ cmp #1
+ jne :+
+ lda #768
+ sta t0
+: lda accessory
+ cmp #28
+ jne :+
+ lda t0
+ clc
+ adc #64
+ sta t0
+: lda armor
+ cmp #13
+ jne :+
+ lda t0
+ clc
+ adc #32
+ sta t0
+: lda dash
+ jeq @directions
+ lda #1280
  lda face
- jeq @integrateX
- lda #$fb80
+ jeq @dashright
+ lda #$fb00
  sta vx
- jmp @integrateX
-@input:
+ jmp @horizontal
+@dashright:
+ lda #1280
+ sta vx
+ jmp @horizontal
+@directions:
  lda pad
  and #(JOY_LEFT|JOY_RIGHT)
- cmp #(JOY_LEFT|JOY_RIGHT)
- jeq @brake
- and #JOY_LEFT
- jne @left
- lda pad
- and #JOY_RIGHT
- jne @right
-@brake:
+ cmp #JOY_LEFT
+ jeq @left
+ cmp #JOY_RIGHT
+ jeq @right
+ ; Friction: stop in four frames, rather than an ice-like coast.
  lda vx
- jeq @integrateX
- jmi @brakeNegative
+ jeq @horizontal
+ jmi @dragleft
  sec
- sbc #$0080
+ sbc #128
  jpl :+
  lda #0
 : sta vx
- jmp @integrateX
-@brakeNegative:
+ jmp @horizontal
+@dragleft:
  clc
- adc #$0080
+ adc #128
  jmi :+
  lda #0
 : sta vx
- jmp @integrateX
+ jmp @horizontal
 @left:
  lda #1
  sta face
@@ -1349,114 +1272,113 @@ MovePlayer:
  sta t1
  lda vx
  sec
- sbc #$0060
- jpl @velocity
+ sbc #96
+ jpl @setvx
  cmp t1
- jcs @velocity
+ jcs @setvx
  lda t1
- jmp @velocity
+ jmp @setvx
 @right:
  stz face
  lda vx
  clc
- adc #$0060
- jmi @velocity
+ adc #96
+ jmi @setvx
  cmp t0
- jcc @velocity
+ jcc @setvx
  lda t0
-@velocity:
+@setvx:
  sta vx
-@integrateX:
+@horizontal:
  lda px
  xba
- ora xfrac
+ ora xsub
  clc
  adc vx
- cmp #$0800
- jcs :+
- lda #$0800
- stz vx
-: cmp #$e800
- jcc :+
- lda #$e800
- stz vx
-: pha
- and #$00ff
- sta xfrac
- pla
+ sta t2
+ and #$ff
+ sta xsub
+ lda t2
  xba
- and #$00ff
+ and #$ff
+ cmp #8
+ jcc @leftlimit
+ cmp #233
+ jcc @storex
+ lda #232
+ jmp @limit
+@leftlimit:
+ lda #8
+@limit:
+ stz vx
+ stz xsub
+@storex:
  sta px
- lda vx
- jsr Abs
- lsr
- lsr
- lsr
- clc
- adc walkphase
- sta walkphase
  lda form
  cmp #2
  jcs @fly
  lda jumpbuffer
  jeq @gravity
  lda coyote
- jne @doJump
+ jne @jump
  lda inventory+62
  jeq @gravity
  lda jumps
  cmp #2
  jcs @gravity
-@doJump:
- inc jumps
- stz jumpbuffer
+@jump:
+ lda coyote
+ jeq :+
+ stz jumps
+: inc jumps
  stz coyote
+ stz jumpbuffer
  stz grounded
- stz yfrac
- lda #$f900
+ lda #$f880
  sta vy
  lda #2
  jsr SFX
 @gravity:
- ; Releasing B shortens the arc, without snapping position or stopping drift.
+ ; Release B to cut ascent, enabling short hops.
  lda pad
  and #JOY_B
- jne @accelerateY
+ jne @accelerate
  lda vy
- jpl @accelerateY
- cmp #$fd80
- jcs @accelerateY
- lda #$fd80
+ jpl @accelerate
+ cmp #$fd00
+ jcs @accelerate
+ lda #$fd00
  sta vy
-@accelerateY:
+@accelerate:
  lda vy
  clc
- adc #$0040
- jmi :+
- cmp #$0700
- jcc :+
- lda #$0700
-: sta vy
+ adc #64
+ bmi @setvy
+ cmp #1792
+ jcc @setvy
+ lda #1792
+@setvy:
+ sta vy
  lda py
  xba
- ora yfrac
+ ora ysub
  clc
  adc vy
- cmp #$2800
- jcs :+
- lda #$2800
- stz vy
-: pha
+ sta t2
  and #$ff
- sta yfrac
- pla
+ sta ysub
+ lda t2
  xba
  and #$ff
- sta py
+ cmp #40
+ jcs :+
+ lda #40
+ stz vy
+ stz ysub
+: sta py
  jmp @floor
 @fly:
  stz vy
- stz yfrac
  lda pad
  and #(JOY_B|JOY_UP)
  jeq @flydown
@@ -1469,14 +1391,14 @@ MovePlayer:
 : sta py
  jmp @floor
 @flydown:
- inc py
+ lda py
+ inc
+ sta py
  lda pad
  and #JOY_DOWN
  jeq @floor
  inc py
 @floor:
- lda grounded
- sta motiontemp
  stz grounded
  lda py
  cmp #152
@@ -1484,24 +1406,17 @@ MovePlayer:
  lda #152
  sta py
  jsr LandPlayer
- jmp @done
 @platforms:
  lda form
  cmp #2
  jcs @done
  lda vy
  jmi @done
- lda pad
- and #JOY_DOWN
- jne @done
  lda prevy
- cmp #96
- jcc @lower
- jeq @lower
- jmp @upper
-@lower:
+ cmp #105
+ jcs @upper
  lda py
- cmp #96
+ cmp #104
  jcc @upper
  lda room
  and #1
@@ -1520,17 +1435,14 @@ MovePlayer:
  adc #56
  cmp px
  jcc @upper
- lda #96
+ lda #104
  sta py
  jsr LandPlayer
- jmp @done
 @upper:
  lda prevy
- cmp #72
- jcc :+
- jeq :+
- jmp @done
-: lda py
+ cmp #73
+ jcs @done
+ lda py
  cmp #72
  jcc @done
  lda px
@@ -1545,16 +1457,11 @@ MovePlayer:
  rts
 LandPlayer:
  stz vy
- stz yfrac
+ stz ysub
  stz jumps
  lda #1
  sta grounded
- lda motiontemp
- jne :+
- lda #4
- sta landtimer
-: rts
-
+ rts
 CycleWeapon:
  ldx #12
 @next:
@@ -1580,6 +1487,8 @@ CycleWeapon:
  jsr Recalculate
  rts
 CycleForm:
+ stz vy
+ stz ysub
  lda #0
  sta t0
 @next:

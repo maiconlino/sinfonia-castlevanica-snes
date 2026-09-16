@@ -156,7 +156,7 @@ LoadSave:
 MenuScreen:
  jsr ClearMap
  jsr ClearOAM
- lda #$3c00
+ lda #$2000
  sta textcolor
  TEXT MenuTitle,1,4
  lda menupage

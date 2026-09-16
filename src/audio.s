@@ -108,9 +108,7 @@ AudioCommand:
     lda audio_ready
     jeq @unavailable
     lda audio_sequence
-    ; Runtime must never stall a video frame for an audio acknowledgement.
-    ; Music requests retry from the next main-loop tick; SFX are best effort.
-    ldy #$0010
+    ldy #$4000
 @ack:
     cmp $2142
     jeq @send

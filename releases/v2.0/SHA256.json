@@ -1,0 +1,37 @@
+[
+  {
+    "path": "REVISION-2.md",
+    "bytes": 2149,
+    "sha256": "3675354244e4fd03e3f38be3592403203d004256244f2009a3089a7272b4cdd2"
+  },
+  {
+    "path": "revision-tests.json",
+    "bytes": 1101,
+    "sha256": "b091cdf365bab1dc04338658ef97c541f2a325e39de10e9c3262010e9ffde6dd"
+  },
+  {
+    "path": "rom-info.json",
+    "bytes": 225,
+    "sha256": "070934297f45530ee6f0b1f5c9101c890670216482b8b8e9cb96bc4563710a00"
+  },
+  {
+    "path": "sinfonia-castlevanica-snes-v2.sfc",
+    "bytes": 1048576,
+    "sha256": "133fb85421f14d68b861e073a0de0d78654465dfd084f83c0231c0bc602a33bb"
+  },
+  {
+    "path": "sinfonia-castlevanica-snes-v2.smc",
+    "bytes": 1048576,
+    "sha256": "133fb85421f14d68b861e073a0de0d78654465dfd084f83c0231c0bc602a33bb"
+  },
+  {
+    "path": "sinfonia-snes-v2-codigo.zip",
+    "bytes": 1735978,
+    "sha256": "0d5da5d10b0e763b455c6000c3ea23bf1156410d59536fb2614298b3cf6c5e97"
+  },
+  {
+    "path": "v2-refined.png",
+    "bytes": 14370,
+    "sha256": "35692b511cfb47809f9f2957a1c0273099433e4ebf19a67659a7c377b8f270ff"
+  }
+]

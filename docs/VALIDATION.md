@@ -1,5 +1,3 @@
-> Documento histórico da versão 1.0. Para a revisão atual, consulte REVISION_1.1.md.
-
 # Validação da versão SNES
 
 ROM: `sinfonia-castlevanica.sfc`, 1.048.576 bytes.

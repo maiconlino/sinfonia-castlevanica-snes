@@ -1,5 +1,3 @@
-> Documento histórico da versão 1.0. Para a revisão atual, consulte REVISION_1.1.md.
-
 # Native SNES campaign validation
 
 Tested ROM SHA-256: `cc4aed7fbadcf86426d81bafc3bb8dc9a67199bf2badad0f6e65a8b60be6b5a4`

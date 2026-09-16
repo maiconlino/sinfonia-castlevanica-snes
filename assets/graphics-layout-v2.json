@@ -1,0 +1,355 @@
+{
+  "format": "SNES4bpp/LE16map/BGR555",
+  "font": {
+    "first": 0,
+    "asciiOffset": 32,
+    "last": 95
+  },
+  "tile_ids": {
+    "stone": 96,
+    "platform_top": 97,
+    "platform_fill": 98,
+    "dark_brick": 99,
+    "column_l": 100,
+    "column_r": 101,
+    "arch_l": 102,
+    "arch_r": 103,
+    "neon_pipe": 104,
+    "grate": 105,
+    "spike": 106,
+    "door_closed": 107,
+    "door_open": 108,
+    "candle": 109,
+    "shrine": 110,
+    "coin": 111,
+    "chest": 112,
+    "sword": 113,
+    "heart": 114,
+    "ether": 115,
+    "key": 116,
+    "mapdot": 117,
+    "bar_full": 118,
+    "bar_empty": 119,
+    "grass": 120,
+    "water": 121,
+    "gear": 122,
+    "crystal": 123,
+    "ladder": 124,
+    "hazard": 125,
+    "secret": 126,
+    "window": 127
+  },
+  "regions": [
+    {
+      "id": 0,
+      "name": "castle",
+      "tiles": 676,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 1,
+      "name": "library",
+      "tiles": 797,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 2,
+      "name": "gardens",
+      "tiles": 719,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 3,
+      "name": "subsoil",
+      "tiles": 718,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 4,
+      "name": "forge",
+      "tiles": 721,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 5,
+      "name": "clockwork",
+      "tiles": 753,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 6,
+      "name": "observatory",
+      "tiles": 734,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 7,
+      "name": "core",
+      "tiles": 703,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    }
+  ],
+  "sprites": {
+    "hero_0": {
+      "tile": 0,
+      "width": 16,
+      "height": 32,
+      "x": 0,
+      "y": 0
+    },
+    "hero_1": {
+      "tile": 2,
+      "width": 16,
+      "height": 32,
+      "x": 16,
+      "y": 0
+    },
+    "hero_2": {
+      "tile": 4,
+      "width": 16,
+      "height": 32,
+      "x": 32,
+      "y": 0
+    },
+    "hero_3": {
+      "tile": 6,
+      "width": 16,
+      "height": 32,
+      "x": 48,
+      "y": 0
+    },
+    "hero_4": {
+      "tile": 8,
+      "width": 16,
+      "height": 32,
+      "x": 64,
+      "y": 0
+    },
+    "hero_5": {
+      "tile": 10,
+      "width": 16,
+      "height": 32,
+      "x": 80,
+      "y": 0
+    },
+    "hero_6": {
+      "tile": 12,
+      "width": 16,
+      "height": 32,
+      "x": 96,
+      "y": 0
+    },
+    "hero_7": {
+      "tile": 14,
+      "width": 16,
+      "height": 32,
+      "x": 112,
+      "y": 0
+    },
+    "wolf_0": {
+      "tile": 64,
+      "width": 32,
+      "height": 16,
+      "x": 0,
+      "y": 32
+    },
+    "wolf_1": {
+      "tile": 68,
+      "width": 32,
+      "height": 16,
+      "x": 32,
+      "y": 32
+    },
+    "bat_0": {
+      "tile": 72,
+      "width": 32,
+      "height": 16,
+      "x": 64,
+      "y": 32
+    },
+    "bat_1": {
+      "tile": 76,
+      "width": 32,
+      "height": 16,
+      "x": 96,
+      "y": 32
+    },
+    "mist_0": {
+      "tile": 128,
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 64
+    },
+    "mist_1": {
+      "tile": 132,
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 64
+    },
+    "guard": {
+      "tile": 192,
+      "width": 16,
+      "height": 32,
+      "x": 0,
+      "y": 96
+    },
+    "archer": {
+      "tile": 194,
+      "width": 16,
+      "height": 32,
+      "x": 16,
+      "y": 96
+    },
+    "sentinel": {
+      "tile": 196,
+      "width": 16,
+      "height": 32,
+      "x": 32,
+      "y": 96
+    },
+    "beast": {
+      "tile": 198,
+      "width": 16,
+      "height": 32,
+      "x": 48,
+      "y": 96
+    },
+    "wisp": {
+      "tile": 200,
+      "width": 16,
+      "height": 32,
+      "x": 64,
+      "y": 96
+    },
+    "boss_0": {
+      "tile": 256,
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 128
+    },
+    "boss_1": {
+      "tile": 260,
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 128
+    },
+    "boss_2": {
+      "tile": 264,
+      "width": 32,
+      "height": 32,
+      "x": 64,
+      "y": 128
+    },
+    "boss_3": {
+      "tile": 268,
+      "width": 32,
+      "height": 32,
+      "x": 96,
+      "y": 128
+    },
+    "boss_4": {
+      "tile": 320,
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 160
+    },
+    "boss_5": {
+      "tile": 324,
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 160
+    },
+    "boss_6": {
+      "tile": 328,
+      "width": 32,
+      "height": 32,
+      "x": 64,
+      "y": 160
+    },
+    "boss_7": {
+      "tile": 332,
+      "width": 32,
+      "height": 32,
+      "x": 96,
+      "y": 160
+    },
+    "boss_8": {
+      "tile": 384,
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 192
+    },
+    "boss_9": {
+      "tile": 388,
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 192
+    },
+    "slash_0": {
+      "tile": 448,
+      "width": 32,
+      "height": 16,
+      "x": 0,
+      "y": 224
+    },
+    "slash_1": {
+      "tile": 452,
+      "width": 32,
+      "height": 16,
+      "x": 32,
+      "y": 224
+    },
+    "projectile": {
+      "tile": 456,
+      "width": 32,
+      "height": 16,
+      "x": 64,
+      "y": 224
+    },
+    "spark": {
+      "tile": 460,
+      "width": 32,
+      "height": 16,
+      "x": 96,
+      "y": 224
+    }
+  },
+  "revision": "2.0",
+  "hero": {
+    "width": 32,
+    "height": 48,
+    "frames": 16,
+    "frameBytes": 768,
+    "method": "VRAM row DMA streaming"
+  },
+  "door": {
+    "tile": 128,
+    "columns": 4,
+    "rows": 6,
+    "distinctTiles": 24
+  }
+}

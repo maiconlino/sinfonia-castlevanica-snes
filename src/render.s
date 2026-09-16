@@ -26,10 +26,25 @@ DrawGame:
  cmp #2
  jeq @bat
  lda #128
+ sta stile
+ lda frame
+ and #8
+ jeq :+
+ lda #132
+ sta stile
+: lda #1
+ sta ssize
+ lda sy
+ clc
+ adc #8
+ sta sy
+ jsr AddSprite
+ jmp @enemies
+@wolf:
+ lda #96
  jmp @animal
-@wolf:lda #64
- jmp @animal
-@bat:lda #72
+@bat:
+ lda #104
 @animal:
  sta stile
  lda frame
@@ -39,9 +54,7 @@ DrawGame:
  clc
  adc #4
  sta stile
-: lda #1
- sta ssize
- lda sy
+: lda sy
  clc
  adc #16
  sta sy
@@ -49,60 +62,70 @@ DrawGame:
  jeq :+
  lda #$70
  sta sattr
+ lda stile
+ clc
+ adc #2
+ sta stile
 : jsr AddSprite
- stz ssize
+ lda sx
+ clc
+ adc #16
+ sta sx
+ lda face
+ jeq @animalright
+ lda stile
+ sec
+ sbc #2
+ jmp @animalend
+@animalright:
+ lda stile
+ clc
+ adc #2
+@animalend:
+ sta stile
+ jsr AddSprite
  jmp @enemies
 @human:
- jsr ChooseHeroFrame
+ jsr SelectHeroPose
+ lda px
+ sec
+ sbc #8
+ sta sx
+ lda py
+ sec
+ sbc #16
+ sta sy
+ stz stile
+ lda #1
+ sta ssize
  lda face
  jeq :+
  lda #$70
  sta sattr
-:
- lda px
- sec
- sbc #8
- sta hero_originx
+: jsr AddSprite
+ stz ssize
  lda py
- sec
- sbc #16
- sta hero_originy
- stz hero_part
-@part:
- lda hero_part
- and #1
- asl
- asl
- asl
- asl
- sta t0
+ clc
+ adc #16
+ sta sy
+ lda #64
+ sta stile
  lda face
  jeq :+
- lda #16
- sec
- sbc t0
- sta t0
-: lda hero_originx
- clc
- adc t0
- sta sx
- lda hero_part
- lsr
- asl
- asl
- asl
- asl
- clc
- adc hero_originy
- sta sy
- lda hero_part
- asl
+ lda #66
  sta stile
- jsr AddSprite
- inc hero_part
- lda hero_part
- cmp #6
- jcc @part
+: jsr AddSprite
+ lda sx
+ clc
+ adc #16
+ sta sx
+ lda #66
+ sta stile
+ lda face
+ jeq :+
+ lda #64
+ sta stile
+: jsr AddSprite
 @enemies:
  lda #$30
  sta sattr
@@ -116,40 +139,29 @@ DrawGame:
  sta sx
  lda enemyy,x
  sta sy
- lda enemyx,x
- cmp px
- jcc :+
- lda #$70
- jmp :++
-: lda #$30
-: sta sattr
  lda enemykind,x
- cmp #1
- jne @groundenemy
- lda frame
- lsr
- and #4
- clc
- adc #72
- sta stile
- lda #1
- sta ssize
- jsr AddSprite
- stz ssize
- jmp @next
-@groundenemy:
  asl
  tax
  lda f:EnemyTiles,x
  sta stile
  lda frame
  and #8
- jeq :+
- lda stile
- clc
- adc #2
+ jeq @enpose
+ lda f:EnemyAltTiles,x
  sta stile
+@enpose:
+ lda #$30
+ sta sattr
+ lda sx
+ cmp px
+ jcc :+
+ lda #$70
+ sta sattr
 : jsr AddSprite
+ ldx loopidx
+ lda enemykind,x
+ cmp #1
+ beq @next
  lda stile
  clc
  adc #32
@@ -167,23 +179,15 @@ DrawGame:
  jcc @each
  lda bosshp
  jeq @attacks
- lda frame
- lsr
- lsr
- lsr
- lsr
- lsr
- and #1
- sta t0
+ lda bossx
+ sta sx
+ lda #136
+ sta sy
  lda boss
  asl
- clc
- adc t0
- sta bossartframe
- lda bossx
- sec
- sbc #16
- sta boss_originx
+ tax
+ lda f:BossTiles,x
+ sta stile
  lda #1
  sta ssize
  lda #$30
@@ -200,74 +204,9 @@ DrawGame:
  jeq :+
  lda #$34
  sta sattr
-: stz boss_part
-@bosspart:
- lda boss_part
- and #1
- asl
- asl
- asl
- asl
- asl
- clc
- adc boss_originx
- sta sx
- lda boss_part
- lsr
- asl
- asl
- asl
- asl
- asl
- clc
- adc #120
- sta sy
- lda boss_part
- asl
- asl
- clc
- adc #256
- sta stile
- jsr AddSprite
- inc boss_part
- lda boss_part
- cmp #4
- jcc @bosspart
+: jsr AddSprite
  stz ssize
 @attacks:
- lda grounded
- jeq @swordeffect
- lda vx
- jeq @swordeffect
- lda frame
- and #7
- cmp #3
- jcs @swordeffect
- lda px
- sec
- sbc #7
- sta sx
- lda face
- jeq :+
- lda px
- clc
- adc #13
- sta sx
-: lda py
- clc
- adc #21
- sta sy
- lda frame
- and #8
- lsr
- lsr
- clc
- adc #136
- sta stile
- lda #$30
- sta sattr
- jsr AddSprite
-@swordeffect:
  lda #$30
  sta sattr
  lda attack
@@ -400,7 +339,7 @@ DrawGame:
  clc
  adc #(22*64+8*2)
  tax
- lda #$3c70
+ lda #$2070
  sta MAP,x
 @pnext:
  inc itemidx
@@ -409,81 +348,68 @@ DrawGame:
  jcc @pickup
  jsr DrawHUD
  rts
-ChooseHeroFrame:
- lda attack
- jeq @air
- cmp #7
- jcc :+
- lda #12
- jmp @set
-: cmp #3
- jcc :+
- lda #13
- jmp @set
-: lda #14
- jmp @set
-@air:
+SelectHeroPose:
  lda grounded
- jne @land
+ jne @ground
  lda vy
- jmi :+
- lda #11
- jmp @set
-: lda #10
- jmp @set
-@land:
- lda landtimer
+ jmi @rise
+ lda #13
+ jmp @chosen
+@rise:
+ lda #12
+ jmp @chosen
+@ground:
+ lda dash
+ jeq @attack
+ lda #14
+ jmp @chosen
+@attack:
+ lda attack
  jeq @walk
- lda #15
- jmp @set
+ lda frame
+ lsr
+ lsr
+ and #1
+ clc
+ adc #10
+ jmp @chosen
 @walk:
  lda vx
  jeq @idle
- lda walkphase
- xba
+ lda animclock
+ lsr
+ lsr
+ lsr
  and #7
  clc
  adc #2
- jmp @set
+ jmp @chosen
 @idle:
- lda frame
+ lda animclock
  lsr
  lsr
  lsr
  lsr
  lsr
  and #1
-@set:
- sta heroframe
+@chosen:
+ sta heroindex
  rts
+
 DrawHUD:
- lda #$3c00
+ lda #$2000
  sta textcolor
  TEXT HpLabel,0,1
  lda #6
  sta textpos
  lda hp
  jsr PrintNumber
- TEXT MpLabel,0,9
- lda #22
+ TEXT MpLabel,0,21
+ lda #46
  sta textpos
  lda mp
  jsr PrintNumber
- TEXT LvLabel,0,17
- lda #38
- sta textpos
- lda level
- jsr PrintNumber
- TEXT GoldLabel,0,25
- lda #54
- sta textpos
- lda gold
- jsr PrintNumber
- lda #66
- sta textpos
- lda weapon
- jsr NameItem
- ; Full-width bars: twenty-four health cells on row2.
+ ; Compact HUD: health and ether, the remaining equipment is in START menu.
  lda hp
  sta t0
  lda maxhp
@@ -494,7 +420,7 @@ DrawHUD:
  sta t1
  lda #0
  sta t2
- ldx #(2*64+2)
+ ldx #(1*64+2)
 @bar:
  lda t0
  cmp t1
@@ -502,10 +428,10 @@ DrawHUD:
  sec
  sbc t1
  sta t0
- lda #$3c76
+ lda #$2076
  jmp @put
 @empty:
- lda #$3c77
+ lda #$2077
 @put:
  sta MAP,x
  inx
@@ -523,17 +449,35 @@ DrawHUD:
  sta ptr
  lda #.bankbyte(FormNames)
  sta ptr+2
- lda #(2*64+42)
+ lda #(1*64+42)
  sta textpos
  jsr Print
- ldx #(25*64)
- lda #0
-@clear:
- sta MAP,x
- inx
- inx
- cpx #(27*64)
- jcc @clear
+ ; Restore scenery under transient notices instead of a permanent black footer.
+ lda region
+ xba
+ asl
+ asl
+ asl
+ clc
+ adc #.loword(RegionMaps)
+ sta src
+ lda #.bankbyte(RegionMaps)
+ sta src+2
+ ldy #(25*64)
+@restore:
+ lda [src],y
+ sta MAP,y
+ iny
+ iny
+ cpy #(28*64)
+ jne @restore
+ lda roomflash
+ jeq @bossbar
+ lda #(27*64+2)
+ sta textpos
+ lda room
+ jsr NameRoom
+@bossbar:
  lda bosshp
  jeq @message
  lda #(25*64+2)
@@ -600,7 +544,7 @@ EndingScreen:
  jsr Blank
  jsr ClearMap
  jsr ClearOAM
- lda #$3c00
+ lda #$2000
  sta textcolor
  TEXT Ending1,3,3
  TEXT Ending2,6,2
@@ -639,11 +583,9 @@ SFX:
  plx
  rts
 Music:
- sta soundcmd
-TryMusic:
- lda soundcmd
  cmp soundarg
- jeq @same
+ beq @same
+ sta soundarg
  phx
  phy
  tax
@@ -653,10 +595,6 @@ TryMusic:
  jsr AudioCommand
  rep #$20
  .a16
- jcs @pending
- lda soundcmd
- sta soundarg
-@pending:
  ply
  plx
 @same:rts
@@ -678,7 +616,8 @@ IRQ:
 BitMasks: .word 1,2,4,8
 Decimal: .word 1000,100,10,1
 RegionCHRBank: .word 3,4,5,6,7,8,9,10
-EnemyTiles: .word 192,72,196,200
+EnemyTiles: .word 192,104,196,200
+EnemyAltTiles: .word 136,108,138,140
 BossTiles: .word 256,260,264,268,320,324,328,332,384,388
 OrbitX: .word 32,30,24,12,0,65524,65512,65506,65504,65506,65512,65524,0,12,24,30
 OrbitY: .word 12,24,36,42,44,42,36,24,12,0,65526,65520,65518,65520,65526,0

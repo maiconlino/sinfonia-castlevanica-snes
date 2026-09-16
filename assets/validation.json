@@ -416,6 +416,6 @@
     }
   ],
   "limits": "Graph logic only. Assumes every reached boss can be defeated and reachable pickups can be collected. Does not verify combat balance, physical geometry, emulator behavior, or campaign duration.",
-  "source_sha256": "be5f735e7a6bf7691a6fc1679f382dee86101fc77199a66fd71ae696009fda42",
+  "source_sha256": "5dd9e3cf55883b64f1052ea9eea3e53800570f7dc88e007ecaf71b06cba80e7d",
   "assembler_sha256": "5e83716ac492fdd214a9f92494708e52c37e644fdb39d3bb31f22f0f30943592"
 }
