@@ -1,0 +1,90 @@
+{
+  "rom_sha256": "f2ed7037fb8773cafcad4ddfb42b8c8ef4389302d4e88aaf786a7cf42020a4ec",
+  "core": "Snes9x",
+  "version": "1.63 921f9f7",
+  "unit_setup_writes_wram": true,
+  "campaign_test": "adaptive_r3.py and replay_r3.py do not modify WRAM",
+  "super_zsnes_executed": false,
+  "physical_hardware_tested": false,
+  "held_right": {
+    "frames": 48,
+    "velocities_q8_first_6": [
+      192,
+      384,
+      576,
+      640,
+      640,
+      640
+    ],
+    "steady_pixel_steps": [
+      2,
+      3
+    ],
+    "zero_steps_after_acceleration": 0,
+    "walking_poses": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "held_left": {
+    "steady_pixel_steps": [
+      2,
+      3
+    ],
+    "zero_steps_after_acceleration": 0
+  },
+  "automatic_edges": {
+    "right": true,
+    "continued_held_input_after_arrival": true,
+    "left": true
+  },
+  "frame_pacing": {
+    "video_frames": 6000,
+    "logical_updates": 6000,
+    "missed_updates": 0,
+    "hero_hidden_frames": 0
+  },
+  "stalled_audio_ack": {
+    "frames": 600,
+    "logical_updates": 600,
+    "blocking_wait": false
+  },
+  "enemies": [
+    {
+      "archetype": 0,
+      "start_x": 180,
+      "end_x": 143,
+      "moved": true
+    },
+    {
+      "archetype": 1,
+      "start_x": 180,
+      "end_x": 135,
+      "moved": true
+    },
+    {
+      "archetype": 2,
+      "start_x": 180,
+      "end_x": 149,
+      "moved": true
+    },
+    {
+      "archetype": 3,
+      "start_x": 180,
+      "end_x": 151,
+      "moved": true
+    }
+  ],
+  "sram": {
+    "altar_save": true,
+    "restart_continue": true,
+    "bytes": 8192
+  },
+  "passed": true
+}

@@ -10,11 +10,6 @@ DrawGame:
  lda #$30
  sta sattr
  stz ssize
- lda inv
- jeq @hero
- lda frame
- and #4
- jne @enemies
 @hero:
  lda px
  sta sx
@@ -113,7 +108,37 @@ DrawGame:
  tax
  lda f:EnemyTiles,x
  sta stile
- jsr AddSprite
+ ldx loopidx
+ lda enemykind,x
+ cmp #1
+ jeq @bat_pose
+ lda enemymoving,x
+ jeq @enemy_facing
+ lda frame
+ and #8
+ jeq @enemy_facing
+ inc stile
+ inc stile
+ jmp @enemy_facing
+@bat_pose:
+ lda #1
+ sta ssize
+ lda frame
+ and #4
+ jeq @enemy_facing
+ lda stile
+ clc
+ adc #4
+ sta stile
+@enemy_facing:
+ lda #$30
+ sta sattr
+ lda enemyface,x
+ jeq :+
+ lda #$70
+ sta sattr
+: jsr AddSprite
+ stz ssize
  ldx loopidx
  lda enemykind,x
  cmp #1
@@ -133,35 +158,8 @@ DrawGame:
  lda loopidx
  cmp #8
  jcc @each
- lda bosshp
- jeq @attacks
- lda bossx
- sta sx
- lda #136
- sta sy
- lda boss
- asl
- tax
- lda f:BossTiles,x
- sta stile
- lda #1
- sta ssize
- lda #$30
- sta sattr
- lda bosstimer
- cmp #30
- jcs :+
- lda frame
- and #4
- jeq :+
- lda #$32
- sta sattr
-: lda bosshit
- jeq :+
- lda #$34
- sta sattr
-: jsr AddSprite
- stz ssize
+ jsr DrawBoss
+ jsr DrawHazards
 @attacks:
  lda #$30
  sta sattr
@@ -408,7 +406,12 @@ DrawHUD:
  TEXT WarningLine,26,10
 @message:
  lda message
- jeq @done
+ jne @hasmessage
+ lda bosshp
+ jne @done
+ TEXT Footer1,27,1
+ rts
+@hasmessage:
  lda messageid
  cmp #1
  jne @locked
@@ -442,7 +445,11 @@ DrawHUD:
  TEXT BossBlockedLine,26,1
  rts
 @died:
- TEXT DeathLine,26,1
+ cmp #7
+ jne :+
+ TEXT LevelLine,26,1
+ rts
+: TEXT DeathLine,26,1
 @done:rts
 EndingScreen:
  jsr Blank
@@ -474,24 +481,21 @@ AudioInit:
  .a16
  rts
 SFX:
- phx
- phy
- tax
- sep #$20
- .a8
- lda #2
- jsr AudioCommand
- rep #$20
- .a16
- ply
- plx
+ sta soundready
  rts
 Music:
  cmp soundarg
  beq @same
  sta soundarg
+ inc a
+ sta soundcmd
+@same:rts
+PumpAudio:
  phx
  phy
+ lda soundcmd
+ jeq @sfx
+ dec a
  tax
  sep #$20
  .a8
@@ -499,9 +503,25 @@ Music:
  jsr AudioCommand
  rep #$20
  .a16
+ bcs @done
+ stz soundcmd
+ jmp @done
+@sfx:
+ lda soundready
+ jeq @done
+ tax
+ sep #$20
+ .a8
+ lda #2
+ jsr AudioCommand
+ rep #$20
+ .a16
+ bcs @done
+ stz soundready
+@done:
  ply
  plx
-@same:rts
+ rts
 RoomMusic:
  lda region
  ldx bosshp
@@ -529,13 +549,13 @@ Title1: .asciiz "SINFONIA"
 Title2: .asciiz "CASTLEVANICA"
 Title3: .asciiz "FUTURISTICA"
 HeroLine: .asciiz "AUREL VESPER"
-StartLine: .asciiz "START: NOVO JOGO"
+StartLine: .asciiz "START: NOVO JOGO R3"
 ContinueLine: .asciiz "SELECT: CONTINUAR SRAM"
 Controls1: .asciiz "Y ESPADA  B SALTO  A MAGIA"
 Controls2: .asciiz "X POCAO L ESQUIVA R ESPADA"
 Controls3: .asciiz "SELECT FORMA START MENU"
 CreditsLine: .asciiz "MAICON LINO / ASTRA  2026"
-Footer1: .asciiz "CIMA PORTA/ALTAR  START MENU"
+Footer1: .asciiz "LATERAIS: PASSAR  CIMA: SALVAR"
 HpLabel: .asciiz "V:"
 MpLabel: .asciiz "M:"
 LvLabel: .asciiz "N:"
@@ -545,6 +565,7 @@ SecretLine: .asciiz "PASSAGEM SECRETA REVELADA!"
 SavedLine: .asciiz "CURADO E SALVO NO CARTUCHO"
 BossBlockedLine: .asciiz "DERROTE O GUARDIAO PRIMEIRO"
 DeathLine: .asciiz "SEU ECO RETORNA AO ALTAR"
+LevelLine: .asciiz "NIVEL +1! VIDA E FORCA MAIORES"
 WarningLine: .asciiz "ATAQUE! ESQUIVE!"
 Ending1: .asciiz "O PRIMEIRO AMANHECER"
 Ending2: .asciiz "O REGENTE NULO SILENCIOU."
@@ -563,6 +584,8 @@ SelectHeroFrame:
  jne @done
  lda dash
  jne @dash
+ lda vx
+ jne @air
  lda attack
  jeq @air
  cmp #6
@@ -590,6 +613,9 @@ SelectHeroFrame:
  lda vx
  jeq @idle
  lda walkphase
+ xba
+ and #$ff
+ lsr
  lsr
  lsr
  and #7

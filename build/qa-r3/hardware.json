@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "rom_sha256": "f2ed7037fb8773cafcad4ddfb42b8c8ef4389302d4e88aaf786a7cf42020a4ec",
+  "rooms": 60,
+  "directed_connections": 140,
+  "main_spine_rooms": 48,
+  "bosses": 10,
+  "boss_frame_slots": 4,
+  "boss_unique_frames": [
+    3,
+    4,
+    3,
+    3,
+    3,
+    4,
+    3,
+    2,
+    3,
+    2
+  ],
+  "native_boss_size": [
+    64,
+    64
+  ],
+  "item_types": 60,
+  "music_themes": 11,
+  "sram_bytes": 8192,
+  "saved_state_bytes": 658
+}

@@ -25,4 +25,4 @@ report={'file':p.name,'bytes':len(rom),'sha256':hashlib.sha256(rom).hexdigest(),
 
 (ROOT/"dist").mkdir(exist_ok=True)
 for ext in ("smc","sfc"):
- (ROOT/f"dist/sinfonia-castlevanica-snes-r2.{ext}").write_bytes(rom)
+ (ROOT/f"dist/sinfonia-castlevanica-snes-r3.{ext}").write_bytes(rom)

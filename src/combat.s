@@ -1,108 +1,24 @@
 .a16
 .i16
 Interact:
+ ; Cima is exclusively for the sanctuary altar, never for changing a room.
  lda bosshp
- jne @blocked
- lda py
- cmp #132
- jcc @done
+ jne @done
  ldx room
  lda f:room_type,x
  and #1
- jeq @doors
+ jeq @done
+ lda py
+ cmp #132
+ jcc @done
  lda px
  sec
  sbc #110
  jsr Abs
  cmp #20
- jcs @doors
+ jcs @done
  jsr Rest
- rts
-@doors:
- stz exitidx
-@loop:
- lda exitidx
- tax
- lda f:door_x,x
- and #$ff
- sec
- sbc px
- sec
- sbc #8
- jsr Abs
- cmp #22
- jcs @next
- lda room
- asl
- asl
- clc
- adc exitidx
- tax
- lda f:room_exit_to,x
- and #$ff
- cmp #255
- jeq @next
- lda f:room_exit_secret,x
- and #$ff
- jeq @gate
- lda room
- asl
- tax
- lda exitidx
- asl
- tay
- lda secrets,x
- and BitMasks,y
- jeq @next
-@gate:
- lda room
- asl
- asl
- clc
- adc exitidx
- sta t4
- tax
- lda f:room_exit_req0,x
- jsr TestRequirement
- jcc @locked
- ldx t4
- lda f:room_exit_req1,x
- jsr TestRequirement
- jcc @locked
- ldx t4
- lda f:room_exit_req2,x
- jsr TestRequirement
- jcc @locked
- ldx t4
- lda f:room_exit_req3,x
- jsr TestRequirement
- jcc @locked
- lda room
- sta lastroom
- ldx t4
- lda f:room_exit_to,x
- and #$ff
- sta room
- jsr EnterRoom
- rts
-@locked:
- lda #2
- sta messageid
- lda #150
- sta message
- rts
-@next:
- inc exitidx
- lda exitidx
- cmp #4
- jcc @loop
 @done:rts
-@blocked:
- lda #5
- sta messageid
- lda #90
- sta message
- rts
 TestRequirement:
  and #$ff
  cmp #255
@@ -357,55 +273,7 @@ SwordAttack:
  sta attack
  lda #1
  jsr SFX
- ; Attacking a suspicious wall reveals its passage permanently.
- stz exitidx
-@secret:
- lda exitidx
- tax
- lda f:door_x,x
- and #$ff
- sec
- sbc px
- sec
- sbc #8
- jsr Abs
- cmp #42
- jcs @secretnext
- lda py
- cmp #124
- jcc @secretnext
- lda room
- asl
- asl
- clc
- adc exitidx
- tax
- lda f:room_exit_secret,x
- and #$ff
- jeq @secretnext
- lda room
- asl
- tax
- lda exitidx
- asl
- tay
- lda secrets,x
- and BitMasks,y
- jne @secretnext
- lda secrets,x
- ora BitMasks,y
- sta secrets,x
- jsr RoomMap
- lda #3
- sta messageid
- lda #120
- sta message
- jmp @targets
-@secretnext:
- inc exitidx
- lda exitidx
- cmp #4
- jcc @secret
+ jsr RevealEdgeSecret
 @targets:
  lda #0
  sta loopidx
@@ -444,8 +312,12 @@ SwordAttack:
  lda bosshp
  jeq @projectile
  lda bossx
+ clc
+ adc #24
  sta t0
- lda #140
+ lda bosssy
+ clc
+ adc #20
  sta t1
  jsr SwordRange
  jcc @projectile
@@ -546,8 +418,8 @@ HitEnemy:
  jcc @dead
  jeq @dead
  sta enemyhp,x
- lda #25
- sta enemycool,x
+ lda #12
+ sta enemyhurt,x
  rts
 @dead:
  stz enemyhp,x
@@ -572,6 +444,10 @@ HitEnemy:
  jsr Recalculate
  lda maxhp
  sta hp
+ lda #7
+ sta messageid
+ lda #120
+ sta message
 @done:rts
 HitBoss:
  pha
@@ -594,6 +470,7 @@ HitBoss:
 @dead:
  stz bosshp
  stz bulletlife
+ jsr ClearHazards
  lda boss
  asl
  tax
@@ -762,256 +639,7 @@ StartShot:
  lda #$fffb
  sta shotdx
 @done:rts
-UpdateEnemies:
- stz loopidx
-@each:
- ldx loopidx
- lda enemyhp,x
- jeq @next
- lda enemycool,x
- jeq @move
- dec enemycool,x
-@move:
- lda slow
- jeq :+
- lda frame
- and #3
- jne @contact
-: lda frame
- and #1
- jne @contact
- lda enemykind,x
- cmp #2
- jcs @ranged
- lda px
- cmp enemyx,x
- jcs @right
- lda enemyx,x
- cmp #18
- jcc @contact
- dec enemyx,x
- jmp @fly
-@right:
- lda enemyx,x
- cmp #225
- jcs @contact
- inc enemyx,x
-@fly:
- lda enemykind,x
- cmp #1
- jne @contact
- lda py
- clc
- adc #8
- cmp enemyy,x
- jcs :+
- dec enemyy,x
- jmp @contact
-: inc enemyy,x
- jmp @contact
-@ranged:
- lda enemycool,x
- jne @contact
- lda bulletlife
- jne @contact
- lda #120
- sta enemycool,x
- lda enemyx,x
- sta bulletx
- lda enemyy,x
- sta bullety
- lda #100
- sta bulletlife
- stz bulletdy
- lda #2
- sta bulletdx
- lda px
- cmp bulletx
- jcs @contact
- lda #$fffe
- sta bulletdx
-@contact:
- lda enemyx,x
- sec
- sbc px
- jsr Abs
- cmp #16
- jcs @orb
- lda enemyy,x
- sec
- sbc py
- jsr Abs
- cmp #27
- jcs @orb
- lda region
- clc
- adc #10
- jsr HurtPlayer
-@orb:
- lda orbit
- jeq @next
- lda frame
- and #15
- jne @next
- ldx loopidx
- lda enemyx,x
- sec
- sbc px
- jsr Abs
- cmp #45
- jcs @next
- lda #10
- sta t2
- jsr HitEnemy
-@next:
- inc loopidx
- inc loopidx
- lda loopidx
- cmp #8
- jcc @each
- rts
-UpdateBoss:
- lda bosshp
- jeq @done
- lda slow
- jeq :+
- lda frame
- and #1
- jne @done
-: lda bosshp
- asl
- cmp bossmax
- jcs @timer
- lda #1
- sta bossphase
-@timer:
- lda bosstimer
- jeq @fire
- dec bosstimer
- cmp #30
- jcs @walk
- ; Last thirty frames are an attack wind-up: stop walking.
- jmp @contact
-@walk:
- lda frame
- and #3
- jne @contact
- lda px
- cmp bossx
- jcs @right
- lda bossx
- cmp #25
- jcc @contact
- dec bossx
- jmp @contact
-@right:
- lda bossx
- cmp #208
- jcs @contact
- inc bossx
- jmp @contact
-@fire:
- inc bosscycle
- lda #130
- sta bosstimer
- lda bossphase
- jeq :+
- lda #90
- sta bosstimer
-: lda bosscycle
- clc
- adc boss
- and #3
- cmp #3
- jeq @dash
- cmp #2
- jeq @rain
- cmp #1
- jeq @high
- lda #172
- sta bullety
- jmp @ground
-@high:
- lda py
- clc
- adc #10
- sta bullety
-@ground:
- lda bossx
- sta bulletx
- lda #120
- sta bulletlife
- stz bulletdy
- lda #3
- sta bulletdx
- lda px
- cmp bossx
- jcs @contact
- lda #$fffd
- sta bulletdx
- jmp @contact
-@rain:
- lda px
- sta bulletx
- lda #45
- sta bullety
- stz bulletdx
- lda #3
- sta bulletdy
- lda #100
- sta bulletlife
- jmp @contact
-@dash:
- lda px
- cmp bossx
- jcs @dashright
- lda bossx
- sec
- sbc #42
- jcc @dashmin
- cmp #16
- jcs @dashstore
-@dashmin:
- lda #16
- jmp @dashstore
-@dashright:
- lda bossx
- clc
- adc #42
- cmp #208
- jcc @dashstore
- lda #208
-@dashstore:
- sta bossx
-@contact:
- lda bossx
- sec
- sbc px
- jsr Abs
- cmp #26
- jcs @orbit
- lda py
- cmp #116
- jcc @orbit
- lda region
- clc
- adc #16
- jsr HurtPlayer
-@orbit:
- lda orbit
- jeq @done
- lda frame
- and #31
- jne @done
- lda bossx
- sec
- sbc px
- jsr Abs
- cmp #50
- jcs @done
- lda #12
- jsr HitBoss
-@done:rts
+.include "enemies.s"
 UpdateProjectiles:
  lda bulletlife
  jeq @shot
@@ -1098,8 +726,10 @@ UpdateProjectiles:
  cmp #28
  jcs @done
  lda shoty
- cmp #120
- jcc @done
+ sec
+ sbc bosssy
+ cmp #64
+ jcs @done
  lda shotdamage
  jsr HitBoss
  stz shotlife

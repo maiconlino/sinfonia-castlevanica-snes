@@ -1,0 +1,25 @@
+{
+  "core": "Snes9x",
+  "version": "1.63 921f9f7",
+  "frames": 30389,
+  "fps": 60.098811862348406,
+  "sample_rate": 32040.0,
+  "pixel_format": 2,
+  "video": [
+    256,
+    224
+  ],
+  "video_sha256": "c2a5996cc7a09465d1f3b0845d86a77b94725a197eff5f50e7ca63bf7dfbe0f8",
+  "audio_frames": 198855,
+  "audio_nonzero": true,
+  "ram_bytes": 131072,
+  "sram_bytes": 8192,
+  "completed": true,
+  "visited_rooms": 60,
+  "bosses_defeated": 10,
+  "item_types_acquired": 60,
+  "deaths": 0,
+  "wall_seconds": 28.31367093800003,
+  "rom_sha256": "f2ed7037fb8773cafcad4ddfb42b8c8ef4389302d4e88aaf786a7cf42020a4ec",
+  "memory_writes": false
+}

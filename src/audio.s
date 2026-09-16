@@ -108,12 +108,8 @@ AudioCommand:
     lda audio_ready
     jeq @unavailable
     lda audio_sequence
-    ldy #$4000
-@ack:
     cmp $2142
     jeq @send
-    dey
-    jne @ack
 @unavailable:
     pla
     sec

@@ -144,6 +144,39 @@ enemyhp: .res 8
 enemycool: .res 8
 enemykind: .res 8
 
+mapdirty: .res 2
+edgecool: .res 2
+edgearrival: .res 2
+edgeslot: .res 2
+edgechosen: .res 2
+edgefrom: .res 2
+arrivalform: .res 2
+arrivalvx: .res 2
+bosssy: .res 2
+bossmove: .res 2
+bossdx: .res 2
+bossdy: .res 2
+bossaim: .res 2
+bossanim: .res 2
+bossloaded: .res 2
+bossrow: .res 2
+bossaction: .res 2
+bossage: .res 2
+hazindex: .res 2
+hazx: .res 16
+hazy: .res 16
+hazdx: .res 16
+hazdy: .res 16
+hazlife: .res 16
+hazkind: .res 16
+hazage: .res 16
+enemyfrac: .res 8
+enemyface: .res 8
+enemywindup: .res 8
+enemyhurt: .res 8
+enemymoving: .res 8
+logicalframes: .res 2
+
 .segment "CODE"
 .a8
 .i8
@@ -227,16 +260,16 @@ Reset:
  sta mode
  sep #$20
  .a8
- lda #1
- sta $4200
+ stz $4200 ; manual joypad polling, no auto-read race
  lda #15
  sta $2100
  rep #$20
  .a16
 MainLoop:
  jsr WaitFrame
- jsr ReadPad
  jsr UploadFrame
+ jsr ReadPad
+ jsr PumpAudio
  inc frame
  lda mode
  jeq TitleTick
@@ -292,15 +325,32 @@ WaitFrame:
  jmi @out
 @in: lda $4212
  jpl @in
-@joy: lda $4212
- and #1
- jne @joy
  rep #$20
  .a16
  rts
 ReadPad:
- lda $4218
- sta pad
+ ; Read the actual held buttons, not key-repeat events. Auto-joypad is disabled.
+ ; The old routine could read $4218 before automatic polling had even started.
+ stz pad
+ sep #$20
+ .a8
+ lda #1
+ sta $4016
+ stz $4016
+ ldx #16
+@bit:
+ lda $4016
+ lsr a
+ rep #$20
+ .a16
+ rol pad
+ sep #$20
+ .a8
+ dex
+ bne @bit
+ rep #$20
+ .a16
+ lda pad
  eor oldpad
  and pad
  sta pressed
@@ -336,25 +386,51 @@ UploadFrame:
  sta $2115
  rep #$20
  .a16
- lda #$6000
- sta $2116
- lda #MAP
- sta $4302
- lda #2048
- sta $4305
- sep #$20
- .a8
- lda #1
- sta $4300
- lda #$18
- sta $4301
- stz $4304
- lda #1
- sta $420b
  rep #$20
  .a16
+ lda mode
+ cmp #1
+ jne @fullmap
+ lda mapdirty
+ jne @fullmap
+ lda #$6000
+ sta t1
+ lda #MAP
+ sta src
+ stz src+2
+ lda #256
+ sta t0
+ jsr DMAVRAM
+ lda #$6000+22*32
+ sta t1
+ lda #MAP+22*64
+ sta src
+ lda #64
+ sta t0
+ jsr DMAVRAM
+ lda #$6000+25*32
+ sta t1
+ lda #MAP+25*64
+ sta src
+ lda #192
+ sta t0
+ jsr DMAVRAM
+ jmp @dynamic
+@fullmap:
+ lda #$6000
+ sta t1
+ lda #MAP
+ sta src
+ stz src+2
+ lda #2048
+ sta t0
+ jsr DMAVRAM
+ stz mapdirty
+@dynamic:
  jsr UploadHero
+ jsr UploadBoss
  rts
+
 Blank:
  sep #$20
  .a8
@@ -467,6 +543,8 @@ LoadRegion:
  sta oldregion
  rts
 BaseMap:
+ lda #1
+ sta mapdirty
  lda region
  xba
  asl
@@ -487,6 +565,8 @@ BaseMap:
  jne @copy
  rts
 ClearMap:
+ lda #1
+ sta mapdirty
  lda #0
  ldx #0
 @loop: sta MAP,x
@@ -723,16 +803,27 @@ NewGame:
 Recalculate:
  lda level
  asl
+ sta t0
  asl
  clc
- adc #116
+ adc t0
+ asl
+ clc
+ adc #128
  sta maxhp
- lda #80
+ lda level
+ asl
+ clc
+ adc level
+ clc
+ adc #97
  sta maxmp
  lda accessory
  cmp #22
  jne @mana
- lda #100
+ lda maxmp
+ clc
+ adc #20
  sta maxmp
 @mana:
  ldx weapon
@@ -770,6 +861,14 @@ Recalculate:
 @done:rts
 EnterRoom:
  jsr Blank
+ lda #1
+ sta mapdirty
+ lda #$ffff
+ sta bossloaded
+ stz bossanim
+ stz bossage
+ stz bossmove
+ jsr ClearHazards
  stz vx
  stz xsub
  stz ysub
@@ -799,6 +898,7 @@ EnterRoom:
  sta px
  lda #152
  sta py
+ jsr ApplyEdgeArrival
  ldx room
  lda f:room_region,x
  and #$ff
@@ -830,7 +930,9 @@ EnterRoom:
  sta bossmax
  lda #184
  sta bossx
- lda #90
+ lda #120
+ sta bosssy
+ lda #100
  sta bosstimer
  lda #0
  sta bosscycle
@@ -843,15 +945,23 @@ EnterRoom:
  sta mp
 @normal:
  jsr SpawnEnemies
+ jsr LoadBossPalette
  jsr RoomMap
  jsr RoomMusic
  jsr DrawGame
+ jsr UploadHero
+ jsr UploadBoss
  jsr Unblank
  rts
 SpawnEnemies:
  ldx #0
  lda #0
-@clear: sta enemyhp,x
+@clear: sta enemyfrac,x
+ sta enemyface,x
+ sta enemywindup,x
+ sta enemyhurt,x
+ sta enemymoving,x
+ sta enemyhp,x
  inx
  inx
  cpx #8
@@ -884,15 +994,16 @@ SpawnEnemies:
  sta enemyy,x
  lda region
  asl
+ asl
  clc
- adc #24
+ adc #36
  sta enemyhp,x
  lda #50
  sta enemycool,x
  txa
  lsr
  clc
- adc room
+ adc region
  and #3
  sta enemykind,x
  inx
@@ -946,75 +1057,7 @@ RoomMap:
  inx
  dey
  jne @pl2
- ; Doors are ground-floor alcoves at x24,88,152,216.
- lda #0
- sta exitidx
-@door:
- lda room
- asl
- asl
- clc
- adc exitidx
- tax
- lda f:room_exit_to,x
- and #$ff
- cmp #255
- jeq @next
- lda f:room_exit_secret,x
- and #$ff
- jeq @visible
- lda room
- asl
- tax
- ldy exitidx
- lda secrets,x
- and BitMasks,y ; index needs word offset, fixed in helper below
- ; Explicit bit test.
- lda exitidx
- asl
- tay
- lda secrets,x
- and BitMasks,y
- jne @visible
- lda #168
- jmp @tile
-@visible:
- lda #128
-@tile:
- ora #$2000
- sta t0
- lda exitidx
- asl
- asl
- asl
- asl
- clc
- adc #(18*64+1*2)
- sta t1
- lda #5
- sta t2
-@doorrow:
- ldx t1
- ldy #4
-@doorcol:
- lda t0
- sta MAP,x
- inc t0
- inx
- inx
- dey
- jne @doorcol
- lda t1
- clc
- adc #64
- sta t1
- dec t2
- jne @doorrow
-@next:
- inc exitidx
- lda exitidx
- cmp #4
- jne @door
+ jsr DrawEdgePassages
  ldx room
  lda f:room_type,x
  and #1
@@ -1047,9 +1090,9 @@ RoomMap:
  sta textpos
  lda room
  jsr NameRoom
- TEXT Footer1,27,1
  rts
 GameTick:
+ inc logicalframes
  lda pressed
  and #JOY_START
  jeq @play
@@ -1062,7 +1105,10 @@ GameTick:
  jsr MenuScreen
  rts
 @play:
- jsr TickTimers
+ lda edgecool
+ jeq :+
+ dec edgecool
+: jsr TickTimers
  jsr Recalculate
  lda pressed
  and #JOY_R
@@ -1080,6 +1126,7 @@ GameTick:
  jsr UsePotion
 @move:
  jsr MovePlayer
+ jsr CheckScreenEdges
  lda pressed
  and #JOY_UP
  jeq @combat
@@ -1227,7 +1274,9 @@ CycleForm:
  jsr SFX
  rts
 
+.include "traversal.s"
 .include "combat.s"
+.include "bosses.s"
 .include "render.s"
 .include "menu_save.s"
 .include "audio.s"

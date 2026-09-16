@@ -1,0 +1,1770 @@
+{
+  "spine": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "L01",
+    "L02",
+    "L03",
+    "L04",
+    "L05",
+    "L08",
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G06",
+    "G07",
+    "D01",
+    "D02",
+    "D03",
+    "D05",
+    "D06",
+    "D08",
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F06",
+    "F07",
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T08",
+    "O01",
+    "O02",
+    "O03",
+    "O05",
+    "O06",
+    "O07",
+    "H01",
+    "H02",
+    "H03",
+    "H05",
+    "H06",
+    "H07"
+  ],
+  "rooms": [
+    {
+      "id": "C01",
+      "name": "Portões da Névoa",
+      "slots": [
+        null,
+        {
+          "exitIndex": 0,
+          "to": "C02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "H05",
+          "requires": [
+            "key_memory_seal",
+            "key_matter_seal",
+            "key_horizon_seal"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "C02",
+      "name": "Escadaria das Gárgulas",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "C01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "C03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C08",
+          "requires": [
+            "key_bronze_crest"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "C03",
+      "name": "Galeria dos Retratos",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "C02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "C05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C04",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "C04",
+      "name": "Varanda dos Sinos",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "C03",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "L02",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "C05",
+      "name": "Capela do Primeiro Eco",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "C03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "C07",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 3,
+          "to": "G04",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "name": "Arsenal dos Exilados",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "C05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "G01",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "C07",
+      "name": "Ponte do Juramento",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "C05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "C08",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "C08",
+      "name": "Tribunal de Bronze",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "C07",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "L01",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C02",
+          "requires": [
+            "key_bronze_crest"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "L01",
+      "name": "Átrio dos Catálogos",
+      "slots": [
+        {
+          "exitIndex": 1,
+          "to": "C08",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 0,
+          "to": "L02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "T04",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "L02",
+      "name": "Nave das Estantes",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "L01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "L03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C04",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "L03",
+      "name": "Arquivo Suspenso",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "L02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "L04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "L07",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "L04",
+      "name": "Corredor dos Espelhos",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "L03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "L05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "L06",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "L05",
+      "name": "Escrivaninha de Neme",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "L04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "L08",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "D06",
+          "requires": [
+            "relic_bat",
+            "key_lift_cog"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "L06",
+      "name": "Folha sem Número",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "L04",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "L07",
+      "name": "Índice Proibido",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "L03",
+          "requires": [
+            "relic_double_jump"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "L08",
+      "name": "Catedral das Margens",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "L05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "G01",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "G01",
+      "name": "Galeria do Inverno",
+      "slots": [
+        {
+          "exitIndex": 1,
+          "to": "L08",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 0,
+          "to": "G02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C06",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "G02",
+      "name": "Terraço dos Espinhos",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "G01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "G03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "G03",
+      "name": "Fonte da Lua Ferida",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "G02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "G04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "G05",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "G04",
+      "name": "Estufa da Última Rosa",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "G03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "G06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C05",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "G05",
+      "name": "Pomar da Lua Oca",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "G03",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "G06",
+      "name": "Canal das Raízes",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "G04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "G07",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "D05",
+          "requires": [
+            "key_valve_handle",
+            "relic_waterbreath"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "G07",
+      "name": "Jardim de Cristal",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "G06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "D01",
+          "requires": [
+            "relic_waterbreath"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "D01",
+      "name": "Poço das Vozes",
+      "slots": [
+        {
+          "exitIndex": 1,
+          "to": "G07",
+          "requires": [
+            "relic_waterbreath"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 0,
+          "to": "D02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "F04",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "D02",
+      "name": "Cisterna dos Nomes",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "D01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "D03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "D03",
+      "name": "Canal de Pressão",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "D02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "D05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "D04",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "D04",
+      "name": "Ossuário Inclinado",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "D03",
+          "requires": [
+            "relic_wolf"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "D07",
+          "requires": [
+            "relic_bat"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "D05",
+      "name": "Capela Submersa",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "D03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "D06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "G06",
+          "requires": [
+            "key_valve_handle",
+            "relic_waterbreath"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "D06",
+      "name": "Chaminé das Marés",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "D05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "D08",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "L05",
+          "requires": [
+            "relic_bat",
+            "key_lift_cog"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "D07",
+      "name": "Relicário sem Fôlego",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "D04",
+          "requires": [
+            "relic_bat"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "D08",
+      "name": "Coração do Reservatório",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "D06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "F01",
+          "requires": [
+            "relic_bat"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "F01",
+      "name": "Vestíbulo da Forja",
+      "slots": [
+        {
+          "exitIndex": 1,
+          "to": "D08",
+          "requires": [
+            "relic_bat"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 0,
+          "to": "F02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "T05",
+          "requires": [
+            "key_clock_pin"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "F02",
+      "name": "Pátio de Fundição",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "F01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "F03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "F03",
+      "name": "Trilho Magnético",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "F02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "F04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "F05",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "F04",
+      "name": "Sala do Motor Mudo",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "F03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "F06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "D01",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "F05",
+      "name": "Cofre da Escória",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "F03",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "F06",
+      "name": "Galeria dos Moldes",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "F04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "F07",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "F07",
+      "name": "Forno de Memórias",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "F06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "T01",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "T01",
+      "name": "Patamar das Horas",
+      "slots": [
+        {
+          "exitIndex": 1,
+          "to": "F07",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 0,
+          "to": "T02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "O06",
+          "requires": [
+            "relic_bat",
+            "relic_time_stop"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "T02",
+      "name": "Nave dos Pêndulos",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "T01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "T03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "T03",
+      "name": "Coroa das Engrenagens",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "T02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "T04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "T06",
+          "requires": [
+            "relic_bat"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "T04",
+      "name": "Elevador do Órgão",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "T03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "T05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "L01",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "T05",
+      "name": "Face do Relógio",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "T04",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "T08",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "F01",
+          "requires": [
+            "key_clock_pin"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "T06",
+      "name": "Galeria do Contratempo",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "T03",
+          "requires": [
+            "relic_bat"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "T07",
+          "requires": [
+            "relic_time_stop"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "T07",
+      "name": "Segundo Esquecido",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "T06",
+          "requires": [
+            "relic_time_stop"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "T08",
+      "name": "Câmara do Carrilhão",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "T05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "O01",
+          "requires": [
+            "relic_time_stop"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "O01",
+      "name": "Terraço das Constelações",
+      "slots": [
+        {
+          "exitIndex": 1,
+          "to": "T08",
+          "requires": [
+            "relic_time_stop"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 0,
+          "to": "O02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "O02",
+      "name": "Jardim das Lentes",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "O01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "O03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "O03",
+      "name": "Galeria das Órbitas",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "O02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "O05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "O04",
+          "requires": [
+            "key_testament_1",
+            "key_testament_2",
+            "key_testament_3",
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "O04",
+      "name": "Túmulo do Vento",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "O03",
+          "requires": [
+            "key_testament_1",
+            "key_testament_2",
+            "key_testament_3",
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "O05",
+      "name": "Escada do Cometa",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "O03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "O06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "O06",
+      "name": "Santuário do Zênite",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "O05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "O07",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "T01",
+          "requires": [
+            "relic_bat",
+            "relic_time_stop"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "O07",
+      "name": "Teatro do Último Céu",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "O06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "H01",
+          "requires": [
+            "key_memory_seal",
+            "key_matter_seal",
+            "key_horizon_seal"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "H01",
+      "name": "Porta das Três Vozes",
+      "slots": [
+        {
+          "exitIndex": 1,
+          "to": "O07",
+          "requires": [
+            "key_memory_seal",
+            "key_matter_seal",
+            "key_horizon_seal"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 0,
+          "to": "H02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "H02",
+      "name": "Coro de Circuitos",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "H01",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "H03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "H03",
+      "name": "Fenda Neural",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "H02",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "H05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "H04",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "H04",
+      "name": "Quarto da Lembrança",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "H03",
+          "requires": [
+            "relic_mist"
+          ],
+          "secret": true,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "H05",
+      "name": "Fonte da Confluência",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "H03",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "H06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 2,
+          "to": "C01",
+          "requires": [
+            "key_memory_seal",
+            "key_matter_seal",
+            "key_horizon_seal"
+          ],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "H06",
+      "name": "Procissão do Silêncio",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "H05",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        {
+          "exitIndex": 1,
+          "to": "H07",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "H07",
+      "name": "Trono do Regente",
+      "slots": [
+        {
+          "exitIndex": 0,
+          "to": "H06",
+          "requires": [],
+          "secret": false,
+          "oneWay": false,
+          "shortcut": false
+        },
+        null,
+        null,
+        null
+      ]
+    }
+  ]
+}
