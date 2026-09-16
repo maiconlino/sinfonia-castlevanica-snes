@@ -1,0 +1,421 @@
+{
+  "status": "passed",
+  "source": "original campaign-data.mjs serialized without edits",
+  "rooms": 60,
+  "regions": 8,
+  "items": 60,
+  "bosses": 10,
+  "max_exits": 4,
+  "max_exit_requirements": 4,
+  "max_room_items": 3,
+  "all_rooms_reachable": 60,
+  "all_items_obtainable": 60,
+  "all_bosses_reachable": 10,
+  "main_route_without_secrets_completable": true,
+  "main_route_room_count": 48,
+  "mandatory_bosses_cannot_be_bypassed": {
+    "boss_sacristan": true,
+    "boss_abbess": true,
+    "boss_gardener": true,
+    "boss_leviathan": true,
+    "boss_founder": true,
+    "boss_clockmaker": true,
+    "boss_astronomer": true
+  },
+  "progression_waves": [
+    {
+      "rooms": [
+        "C02"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "C03"
+      ],
+      "bosses": [],
+      "items": [
+        "armor_wayfarer"
+      ]
+    },
+    {
+      "rooms": [
+        "C05"
+      ],
+      "bosses": [],
+      "items": [
+        "accessory_glass"
+      ]
+    },
+    {
+      "rooms": [
+        "C07",
+        "C06"
+      ],
+      "bosses": [],
+      "items": [
+        "consumable_return"
+      ]
+    },
+    {
+      "rooms": [
+        "C08"
+      ],
+      "bosses": [],
+      "items": [
+        "sword_lunar_rapier"
+      ]
+    },
+    {
+      "rooms": [],
+      "bosses": [
+        "boss_sacristan"
+      ],
+      "items": [
+        "key_bronze_crest",
+        "relic_double_jump"
+      ]
+    },
+    {
+      "rooms": [
+        "C04",
+        "L01"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "L02"
+      ],
+      "bosses": [],
+      "items": [
+        "consumable_mana",
+        "sword_bell"
+      ]
+    },
+    {
+      "rooms": [
+        "L03"
+      ],
+      "bosses": [],
+      "items": [
+        "armor_scribe"
+      ]
+    },
+    {
+      "rooms": [
+        "L04",
+        "L07"
+      ],
+      "bosses": [],
+      "items": [
+        "sword_mercury"
+      ]
+    },
+    {
+      "rooms": [
+        "L05"
+      ],
+      "bosses": [],
+      "items": [
+        "accessory_moon",
+        "sword_palimpsest"
+      ]
+    },
+    {
+      "rooms": [
+        "L08"
+      ],
+      "bosses": [],
+      "items": [
+        "spell_watchorb"
+      ]
+    },
+    {
+      "rooms": [],
+      "bosses": [
+        "boss_abbess"
+      ],
+      "items": [
+        "key_memory_seal",
+        "relic_wolf"
+      ]
+    },
+    {
+      "rooms": [
+        "G04",
+        "G01"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "G02",
+        "G03",
+        "G06"
+      ],
+      "bosses": [],
+      "items": [
+        "consumable_greater_potion"
+      ]
+    },
+    {
+      "rooms": [
+        "G05",
+        "G07"
+      ],
+      "bosses": [],
+      "items": [
+        "accessory_fang",
+        "armor_silver",
+        "key_valve_handle"
+      ]
+    },
+    {
+      "rooms": [],
+      "bosses": [
+        "boss_gardener"
+      ],
+      "items": [
+        "accessory_rose",
+        "relic_waterbreath",
+        "spell_frost",
+        "sword_frost"
+      ]
+    },
+    {
+      "rooms": [
+        "D05",
+        "D01"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "D02",
+        "D03",
+        "D06"
+      ],
+      "bosses": [],
+      "items": [
+        "consumable_antidote"
+      ]
+    },
+    {
+      "rooms": [
+        "D04",
+        "D08"
+      ],
+      "bosses": [],
+      "items": [
+        "armor_flood"
+      ]
+    },
+    {
+      "rooms": [],
+      "bosses": [
+        "boss_leviathan"
+      ],
+      "items": [
+        "key_lift_cog",
+        "relic_bat",
+        "sword_tide"
+      ]
+    },
+    {
+      "rooms": [
+        "D07",
+        "F01"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "F02"
+      ],
+      "bosses": [],
+      "items": [
+        "accessory_boots",
+        "key_testament_2"
+      ]
+    },
+    {
+      "rooms": [
+        "F03"
+      ],
+      "bosses": [],
+      "items": [
+        "spell_voltaic",
+        "sword_basalt"
+      ]
+    },
+    {
+      "rooms": [
+        "F04"
+      ],
+      "bosses": [],
+      "items": [
+        "accessory_magnet"
+      ]
+    },
+    {
+      "rooms": [
+        "F06"
+      ],
+      "bosses": [],
+      "items": [
+        "accessory_ember"
+      ]
+    },
+    {
+      "rooms": [
+        "F07"
+      ],
+      "bosses": [],
+      "items": [
+        "armor_forge",
+        "sword_magnet"
+      ]
+    },
+    {
+      "rooms": [],
+      "bosses": [
+        "boss_founder"
+      ],
+      "items": [
+        "key_matter_seal",
+        "relic_mist"
+      ]
+    },
+    {
+      "rooms": [
+        "F05",
+        "T01",
+        "T04",
+        "L06"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "T02",
+        "T03",
+        "T05"
+      ],
+      "bosses": [
+        "boss_ember_knight"
+      ],
+      "items": [
+        "accessory_eye",
+        "armor_dawn",
+        "key_testament_1"
+      ]
+    },
+    {
+      "rooms": [
+        "T06",
+        "T08"
+      ],
+      "bosses": [],
+      "items": [
+        "accessory_clock",
+        "armor_chronoweave"
+      ]
+    },
+    {
+      "rooms": [],
+      "bosses": [
+        "boss_clockmaker"
+      ],
+      "items": [
+        "key_clock_pin",
+        "relic_time_stop",
+        "sword_pendulum"
+      ]
+    },
+    {
+      "rooms": [
+        "O06",
+        "T07",
+        "O01"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "O02",
+        "O05",
+        "O07"
+      ],
+      "bosses": [],
+      "items": [
+        "key_testament_3",
+        "spell_aurora",
+        "spell_voidbells"
+      ]
+    },
+    {
+      "rooms": [
+        "O03"
+      ],
+      "bosses": [
+        "boss_astronomer"
+      ],
+      "items": [
+        "consumable_elixir",
+        "key_horizon_seal",
+        "relic_aurora",
+        "sword_sun"
+      ]
+    },
+    {
+      "rooms": [
+        "H05",
+        "O04",
+        "H01"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [
+        "H02",
+        "H03",
+        "H06"
+      ],
+      "bosses": [
+        "boss_ownerless_sword"
+      ],
+      "items": [
+        "sword_tempest"
+      ]
+    },
+    {
+      "rooms": [
+        "H04",
+        "H07"
+      ],
+      "bosses": [],
+      "items": []
+    },
+    {
+      "rooms": [],
+      "bosses": [
+        "boss_regent"
+      ],
+      "items": [
+        "accessory_voice"
+      ]
+    }
+  ],
+  "limits": "Graph logic only. Assumes every reached boss can be defeated and reachable pickups can be collected. Does not verify combat balance, physical geometry, emulator behavior, or campaign duration.",
+  "source_sha256": "2330c5cc1fd4e7dc6d9c101925b5cfc93e991c7c9e9e97e746dcab4e484d5e18",
+  "assembler_sha256": "5e83716ac492fdd214a9f92494708e52c37e644fdb39d3bb31f22f0f30943592"
+}

@@ -1,0 +1,9 @@
+{
+  "file": "sinfonia-castlevanica.sfc",
+  "bytes": 1048576,
+  "sha256": "e573ddc11b5d790f7346e46f3db352f2575deeec038171cf6e4afc650b222cdd",
+  "checksum": 23685,
+  "mapper": "LoROM",
+  "region": "NTSC",
+  "sram_bytes": 8192
+}

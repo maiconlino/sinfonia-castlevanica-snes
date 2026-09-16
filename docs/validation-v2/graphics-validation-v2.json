@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "backgrounds": 8,
+  "layers_per_region": 2,
+  "hero_poses": 16,
+  "hero_pixels": [
+    32,
+    48
+  ],
+  "door_metatiles": [
+    3,
+    5
+  ],
+  "common_tiles": 224,
+  "obj_overlaps": 0,
+  "pixel_roundtrip": "exact, including H/V flip flags"
+}

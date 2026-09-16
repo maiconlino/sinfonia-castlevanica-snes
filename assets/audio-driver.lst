@@ -1,0 +1,351 @@
+start:
+0200  20           clrp
+0201  CD EF        mov x, #$ef
+0203  BD           mov sp,x
+0204  8F 30 F1     mov $f1, #$30
+0207  8F 6C F2     mov $f2, #$6c
+020A  8F E0 F3     mov $f3, #$e0
+020D  8F 5C F2     mov $f2, #$5c
+0210  8F FF F3     mov $f3, #$ff
+0213  8F 4C F2     mov $f2, #$4c
+0216  8F 00 F3     mov $f3, #$00
+0219  8F 2D F2     mov $f2, #$2d
+021C  8F 00 F3     mov $f3, #$00
+021F  8F 3D F2     mov $f2, #$3d
+0222  8F 00 F3     mov $f3, #$00
+0225  8F 4D F2     mov $f2, #$4d
+0228  8F 00 F3     mov $f3, #$00
+022B  8F 5D F2     mov $f2, #$5d
+022E  8F 08 F3     mov $f3, #$08
+0231  8F 0C F2     mov $f2, #$0c
+0234  8F 5A F3     mov $f3, #$5a
+0237  8F 1C F2     mov $f2, #$1c
+023A  8F 5A F3     mov $f3, #$5a
+023D  8F 2C F2     mov $f2, #$2c
+0240  8F 00 F3     mov $f3, #$00
+0243  8F 3C F2     mov $f2, #$3c
+0246  8F 00 F3     mov $f3, #$00
+0249  8F 6D F2     mov $f2, #$6d
+024C  8F F0 F3     mov $f3, #$f0
+024F  8F 7D F2     mov $f2, #$7d
+0252  8F 00 F3     mov $f3, #$00
+0255  8F 0D F2     mov $f2, #$0d
+0258  8F 00 F3     mov $f3, #$00
+025B  8F 00 F2     mov $f2, #$00
+025E  8F 46 F3     mov $f3, #$46
+0261  8F 01 F2     mov $f2, #$01
+0264  8F 3E F3     mov $f3, #$3e
+0267  8F 04 F2     mov $f2, #$04
+026A  8F 00 F3     mov $f3, #$00
+026D  8F 05 F2     mov $f2, #$05
+0270  8F 8F F3     mov $f3, #$8f
+0273  8F 06 F2     mov $f2, #$06
+0276  8F C0 F3     mov $f3, #$c0
+0279  8F 07 F2     mov $f2, #$07
+027C  8F 7F F3     mov $f3, #$7f
+027F  8F 10 F2     mov $f2, #$10
+0282  8F 26 F3     mov $f3, #$26
+0285  8F 11 F2     mov $f2, #$11
+0288  8F 32 F3     mov $f3, #$32
+028B  8F 14 F2     mov $f2, #$14
+028E  8F 01 F3     mov $f3, #$01
+0291  8F 15 F2     mov $f2, #$15
+0294  8F 8F F3     mov $f3, #$8f
+0297  8F 16 F2     mov $f2, #$16
+029A  8F 95 F3     mov $f3, #$95
+029D  8F 17 F2     mov $f2, #$17
+02A0  8F 7F F3     mov $f3, #$7f
+02A3  8F 20 F2     mov $f2, #$20
+02A6  8F 3E F3     mov $f3, #$3e
+02A9  8F 21 F2     mov $f2, #$21
+02AC  8F 3E F3     mov $f3, #$3e
+02AF  8F 24 F2     mov $f2, #$24
+02B2  8F 02 F3     mov $f3, #$02
+02B5  8F 25 F2     mov $f2, #$25
+02B8  8F 8F F3     mov $f3, #$8f
+02BB  8F 26 F2     mov $f2, #$26
+02BE  8F D0 F3     mov $f3, #$d0
+02C1  8F 27 F2     mov $f2, #$27
+02C4  8F 7F F3     mov $f3, #$7f
+02C7  8F 30 F2     mov $f2, #$30
+02CA  8F 1C F3     mov $f3, #$1c
+02CD  8F 31 F2     mov $f2, #$31
+02D0  8F 23 F3     mov $f3, #$23
+02D3  8F 34 F2     mov $f2, #$34
+02D6  8F 03 F3     mov $f3, #$03
+02D9  8F 35 F2     mov $f2, #$35
+02DC  8F 89 F3     mov $f3, #$89
+02DF  8F 36 F2     mov $f2, #$36
+02E2  8F C0 F3     mov $f3, #$c0
+02E5  8F 37 F2     mov $f2, #$37
+02E8  8F 7F F3     mov $f3, #$7f
+02EB  8F 40 F2     mov $f2, #$40
+02EE  8F 5A F3     mov $f3, #$5a
+02F1  8F 41 F2     mov $f2, #$41
+02F4  8F 5A F3     mov $f3, #$5a
+02F7  8F 44 F2     mov $f2, #$44
+02FA  8F 04 F3     mov $f3, #$04
+02FD  8F 45 F2     mov $f2, #$45
+0300  8F 8F F3     mov $f3, #$8f
+0303  8F 46 F2     mov $f2, #$46
+0306  8F 91 F3     mov $f3, #$91
+0309  8F 47 F2     mov $f2, #$47
+030C  8F 7F F3     mov $f3, #$7f
+030F  8F 00 10     mov $10, #$00
+0312  8F 00 18     mov $18, #$00
+0315  8F 00 1A     mov $1a, #$00
+0318  8F 00 1B     mov $1b, #$00
+031B  8F 00 1D     mov $1d, #$00
+031E  8F 00 19     mov $19, #$00
+0321  8F 5C F2     mov $f2, #$5c
+0324  8F 00 F3     mov $f3, #$00
+0327  8F 6C F2     mov $f2, #$6c
+032A  8F 20 F3     mov $f3, #$20
+032D  8F 10 FA     mov $fa, #$10
+0330  8F 01 F1     mov $f1, #$01
+0333  E8 00        mov a, #$00
+0335  3F 00 00     call set_theme
+0338  8F 00 F6     mov $f6, #$00
+033B  8F 53 F7     mov $f7, #$53
+main:
+033E  E4 F6        mov a, $f6
+0340  64 10        cmp a, seq
+0342  F0 00        branch $f0 timer
+0344  C4 1C        mov $1c, a
+0346  E4 F6        mov a, $f6
+0348  64 1C        
+034A  D0 00        branch $d0 timer
+034C  C4 10        mov $10, a
+034E  E4 F4        mov a, $f4
+0350  68 01        
+0352  D0 00        branch $d0 check_sfx
+0354  E4 F5        mov a, $f5
+0356  68 0B        
+0358  B0 00        branch $b0 ack
+035A  3F 00 00     call set_theme
+035D  5F 00 00     jmp ack
+check_sfx:
+0360  68 02        
+0362  D0 00        branch $d0 check_mute
+0364  E4 F5        mov a, $f5
+0366  3F 00 00     call sfx
+0369  5F 00 00     jmp ack
+check_mute:
+036C  68 03        
+036E  D0 00        branch $d0 ack
+0370  E4 F5        mov a, $f5
+0372  F0 00        branch $f0 unmute
+0374  8F 6C F2     mov $f2, #$6c
+0377  8F 60 F3     mov $f3, #$60
+037A  5F 00 00     jmp ack
+unmute:
+037D  8F 6C F2     mov $f2, #$6c
+0380  8F 20 F3     mov $f3, #$20
+ack:
+0383  E4 10        mov a, $10
+0385  C4 F6        mov $f6, a
+timer:
+0387  E4 FD        mov a, $fd
+0389  F0 00        branch $f0 flush
+038B  C4 1C        mov $1c, a
+038D  E4 1A        mov a, $1a
+038F  F0 00        branch $f0 music_timer
+0391  80           setc
+0392  A4 1C        sbc a, elapsed
+0394  90 00        branch $90 sfx_stop
+0396  F0 00        branch $f0 sfx_stop
+0398  C4 1A        mov $1a, a
+039A  5F 00 00     jmp music_timer
+sfx_stop:
+039D  8F 00 1A     mov $1a, #$00
+03A0  E4 19        mov a, $19
+03A2  08 10        
+03A4  C4 19        mov $19, a
+music_timer:
+03A6  E4 17        mov a, $17
+03A8  80           
+03A9  A4 1C        
+03AB  90 00        branch $90 music_tick
+03AD  F0 00        branch $f0 music_tick
+03AF  C4 17        mov $17, a
+03B1  5F 00 00     jmp flush
+music_tick:
+03B4  E4 16        mov a, $16
+03B6  C4 17        mov $17, a
+03B8  3F 00 00     call row
+flush:
+03BB  E4 19        mov a, $19
+03BD  8F 5C F2     mov $f2, #$5c
+03C0  C4 F3        mov $f3, a
+03C2  E4 18        mov a, $18
+03C4  F0 00        branch $f0 main_again
+03C6  8F 4C F2     mov $f2, #$4c
+03C9  C4 F3        mov $f3, a
+03CB  8F 00 18     mov $18, #$00
+main_again:
+03CE  5F 00 00     jmp main
+set_theme:
+03D1  C4 1B        mov $1b, a
+03D3  1C 1C 5D     asl a / asl a / mov x,a
+03D6  F5 00 0C     mov a, !$0c00+x
+03D9  C4 12        mov $12, a
+03DB  F5 01 0C     mov a, !$0c01+x
+03DE  C4 13        mov $13, a
+03E0  F5 02 0C     mov a, !$0c02+x
+03E3  C4 16        mov $16, a
+03E5  E4 12        mov a, $12
+03E7  C4 14        mov $14, a
+03E9  E4 13        mov a, $13
+03EB  C4 15        mov $15, a
+03ED  F5 03 0C     mov a, !$0c03+x
+03F0  8F 04 F2     mov $f2, #$04
+03F3  C4 F3        mov $f3, a
+03F5  8F 01 17     mov $17, #$01
+03F8  E4 19        mov a, $19
+03FA  08 0F        
+03FC  C4 19        mov $19, a
+03FE  6F           ret
+row:
+03FF  8D 00        mov y, #$00
+0401  F7 12        mov a, [$12]+y
+0403  68 FF        
+0405  D0 00        branch $d0 row_start
+0407  E4 14        mov a, $14
+0409  C4 12        mov $12, a
+040B  E4 15        mov a, $15
+040D  C4 13        mov $13, a
+row_start:
+040F  8D 00        mov y, #$00
+0411  F7 12        mov a, [$12]+y
+0413  F0 00        branch $f0 v0_done
+0415  68 01        
+0417  D0 00        branch $d0 v0_on
+0419  E4 19        mov a, $19
+041B  08 01        
+041D  C4 19        mov $19, a
+041F  5F 00 00     jmp v0_done
+v0_on:
+0422  5D           mov x,a
+0423  F5 00 0A     mov a, !$0a00+x
+0426  8F 02 F2     mov $f2, #$02
+0429  C4 F3        mov $f3, a
+042B  F5 00 0B     mov a, !$0b00+x
+042E  8F 03 F2     mov $f2, #$03
+0431  C4 F3        mov $f3, a
+0433  E4 19        mov a, $19
+0435  28 FE        
+0437  C4 19        mov $19, a
+0439  E4 18        mov a, $18
+043B  08 01        
+043D  C4 18        mov $18, a
+v0_done:
+043F  8D 01        mov y, #$01
+0441  F7 12        mov a, [$12]+y
+0443  F0 00        branch $f0 v1_done
+0445  68 01        
+0447  D0 00        branch $d0 v1_on
+0449  E4 19        mov a, $19
+044B  08 02        
+044D  C4 19        mov $19, a
+044F  5F 00 00     jmp v1_done
+v1_on:
+0452  5D           mov x,a
+0453  F5 00 0A     mov a, !$0a00+x
+0456  8F 12 F2     mov $f2, #$12
+0459  C4 F3        mov $f3, a
+045B  F5 00 0B     mov a, !$0b00+x
+045E  8F 13 F2     mov $f2, #$13
+0461  C4 F3        mov $f3, a
+0463  E4 19        mov a, $19
+0465  28 FD        
+0467  C4 19        mov $19, a
+0469  E4 18        mov a, $18
+046B  08 02        
+046D  C4 18        mov $18, a
+v1_done:
+046F  8D 02        mov y, #$02
+0471  F7 12        mov a, [$12]+y
+0473  F0 00        branch $f0 v2_done
+0475  68 01        
+0477  D0 00        branch $d0 v2_on
+0479  E4 19        mov a, $19
+047B  08 04        
+047D  C4 19        mov $19, a
+047F  5F 00 00     jmp v2_done
+v2_on:
+0482  5D           mov x,a
+0483  F5 00 0A     mov a, !$0a00+x
+0486  8F 22 F2     mov $f2, #$22
+0489  C4 F3        mov $f3, a
+048B  F5 00 0B     mov a, !$0b00+x
+048E  8F 23 F2     mov $f2, #$23
+0491  C4 F3        mov $f3, a
+0493  E4 19        mov a, $19
+0495  28 FB        
+0497  C4 19        mov $19, a
+0499  E4 18        mov a, $18
+049B  08 04        
+049D  C4 18        mov $18, a
+v2_done:
+049F  8D 03        mov y, #$03
+04A1  F7 12        mov a, [$12]+y
+04A3  F0 00        branch $f0 v3_done
+04A5  68 01        
+04A7  D0 00        branch $d0 v3_on
+04A9  E4 19        mov a, $19
+04AB  08 08        
+04AD  C4 19        mov $19, a
+04AF  5F 00 00     jmp v3_done
+v3_on:
+04B2  5D           mov x,a
+04B3  F5 00 0A     mov a, !$0a00+x
+04B6  8F 32 F2     mov $f2, #$32
+04B9  C4 F3        mov $f3, a
+04BB  F5 00 0B     mov a, !$0b00+x
+04BE  8F 33 F2     mov $f2, #$33
+04C1  C4 F3        mov $f3, a
+04C3  E4 19        mov a, $19
+04C5  28 F7        
+04C7  C4 19        mov $19, a
+04C9  E4 18        mov a, $18
+04CB  08 08        
+04CD  C4 18        mov $18, a
+v3_done:
+04CF  E4 12        mov a, $12
+04D1  60 88 04     clrc / adc a,#4
+04D4  C4 12        mov $12, a
+04D6  90 00        branch $90 row_done
+04D8  AB 13        inc pointer high
+row_done:
+04DA  6F           
+sfx:
+04DB  68 07        
+04DD  B0 00        branch $b0 sfx_return
+04DF  C4 1D        mov $1d, a
+04E1  1C 1C 5D     
+04E4  F5 40 0C     mov a, !$0c40+x
+04E7  C4 1A        mov $1a, a
+04E9  F5 41 0C     mov a, !$0c41+x
+04EC  8F 44 F2     mov $f2, #$44
+04EF  C4 F3        mov $f3, a
+04F1  F5 42 0C     mov a, !$0c42+x
+04F4  C4 1C        mov $1c, a
+04F6  F5 43 0C     mov a, !$0c43+x
+04F9  8F 46 F2     mov $f2, #$46
+04FC  C4 F3        mov $f3, a
+04FE  E4 1C        mov a, $1c
+0500  5D           
+0501  F5 00 0A     mov a, !$0a00+x
+0504  8F 42 F2     mov $f2, #$42
+0507  C4 F3        mov $f3, a
+0509  F5 00 0B     mov a, !$0b00+x
+050C  8F 43 F2     mov $f2, #$43
+050F  C4 F3        mov $f3, a
+0511  E4 19        mov a, $19
+0513  28 EF        
+0515  C4 19        mov $19, a
+0517  E4 18        mov a, $18
+0519  08 10        
+051B  C4 18        mov $18, a
+sfx_return:
+051D  6F           

@@ -1,0 +1,295 @@
+{
+  "version": 2,
+  "format": "SNES 4bpp / Mode 1 / BGR555",
+  "common_count": 224,
+  "hero_poses": 16,
+  "hero_size": [
+    32,
+    48
+  ],
+  "regions": [
+    {
+      "id": 0,
+      "name": "castle",
+      "foreground_tiles": 551,
+      "far_tiles": 244,
+      "palette_bytes": 128
+    },
+    {
+      "id": 1,
+      "name": "library",
+      "foreground_tiles": 744,
+      "far_tiles": 241,
+      "palette_bytes": 128
+    },
+    {
+      "id": 2,
+      "name": "gardens",
+      "foreground_tiles": 690,
+      "far_tiles": 240,
+      "palette_bytes": 128
+    },
+    {
+      "id": 3,
+      "name": "subsoil",
+      "foreground_tiles": 559,
+      "far_tiles": 245,
+      "palette_bytes": 128
+    },
+    {
+      "id": 4,
+      "name": "forge",
+      "foreground_tiles": 664,
+      "far_tiles": 245,
+      "palette_bytes": 128
+    },
+    {
+      "id": 5,
+      "name": "clockwork",
+      "foreground_tiles": 721,
+      "far_tiles": 243,
+      "palette_bytes": 128
+    },
+    {
+      "id": 6,
+      "name": "observatory",
+      "foreground_tiles": 525,
+      "far_tiles": 244,
+      "palette_bytes": 128
+    },
+    {
+      "id": 7,
+      "name": "core",
+      "foreground_tiles": 623,
+      "far_tiles": 246,
+      "palette_bytes": 128
+    }
+  ],
+  "sprites": {
+    "hero_stream": {
+      "tile": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 48
+    },
+    "wolf_0": {
+      "tile": 4,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 16
+    },
+    "wolf_1": {
+      "tile": 8,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 16
+    },
+    "bat_0": {
+      "tile": 12,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 16
+    },
+    "bat_1": {
+      "tile": 68,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 16
+    },
+    "mist_0": {
+      "tile": 72,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32
+    },
+    "mist_1": {
+      "tile": 76,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32
+    },
+    "guard_walk": {
+      "tile": 128,
+      "x": 0,
+      "y": 64,
+      "width": 16,
+      "height": 32
+    },
+    "guard": {
+      "tile": 192,
+      "x": 0,
+      "y": 96,
+      "width": 16,
+      "height": 32
+    },
+    "archer_walk": {
+      "tile": 130,
+      "x": 16,
+      "y": 64,
+      "width": 16,
+      "height": 32
+    },
+    "archer": {
+      "tile": 194,
+      "x": 16,
+      "y": 96,
+      "width": 16,
+      "height": 32
+    },
+    "sentinel_walk": {
+      "tile": 132,
+      "x": 32,
+      "y": 64,
+      "width": 16,
+      "height": 32
+    },
+    "sentinel": {
+      "tile": 196,
+      "x": 32,
+      "y": 96,
+      "width": 16,
+      "height": 32
+    },
+    "beast_walk": {
+      "tile": 134,
+      "x": 48,
+      "y": 64,
+      "width": 16,
+      "height": 32
+    },
+    "beast": {
+      "tile": 198,
+      "x": 48,
+      "y": 96,
+      "width": 16,
+      "height": 32
+    },
+    "wisp_walk": {
+      "tile": 136,
+      "x": 64,
+      "y": 64,
+      "width": 16,
+      "height": 32
+    },
+    "wisp": {
+      "tile": 200,
+      "x": 64,
+      "y": 96,
+      "width": 16,
+      "height": 32
+    },
+    "boss_0": {
+      "tile": 256,
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32
+    },
+    "boss_1": {
+      "tile": 260,
+      "x": 32,
+      "y": 128,
+      "width": 32,
+      "height": 32
+    },
+    "boss_2": {
+      "tile": 264,
+      "x": 64,
+      "y": 128,
+      "width": 32,
+      "height": 32
+    },
+    "boss_3": {
+      "tile": 268,
+      "x": 96,
+      "y": 128,
+      "width": 32,
+      "height": 32
+    },
+    "boss_4": {
+      "tile": 320,
+      "x": 0,
+      "y": 160,
+      "width": 32,
+      "height": 32
+    },
+    "boss_5": {
+      "tile": 324,
+      "x": 32,
+      "y": 160,
+      "width": 32,
+      "height": 32
+    },
+    "boss_6": {
+      "tile": 328,
+      "x": 64,
+      "y": 160,
+      "width": 32,
+      "height": 32
+    },
+    "boss_7": {
+      "tile": 332,
+      "x": 96,
+      "y": 160,
+      "width": 32,
+      "height": 32
+    },
+    "boss_8": {
+      "tile": 384,
+      "x": 0,
+      "y": 192,
+      "width": 32,
+      "height": 32
+    },
+    "boss_9": {
+      "tile": 388,
+      "x": 32,
+      "y": 192,
+      "width": 32,
+      "height": 32
+    },
+    "slash_0": {
+      "tile": 448,
+      "x": 0,
+      "y": 224,
+      "width": 32,
+      "height": 32
+    },
+    "slash_1": {
+      "tile": 452,
+      "x": 32,
+      "y": 224,
+      "width": 32,
+      "height": 32
+    },
+    "projectile": {
+      "tile": 456,
+      "x": 64,
+      "y": 224,
+      "width": 32,
+      "height": 32
+    },
+    "spark": {
+      "tile": 460,
+      "x": 96,
+      "y": 224,
+      "width": 32,
+      "height": 32
+    }
+  },
+  "doors": {
+    "open": 128,
+    "closed": 143,
+    "secret": 158,
+    "width": 3,
+    "height": 5,
+    "altar": 173
+  }
+}

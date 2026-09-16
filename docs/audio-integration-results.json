@@ -1,0 +1,197 @@
+{
+  "core": {
+    "core": "Snes9x",
+    "version": "1.63",
+    "frames": 1566,
+    "fps": 60.098811862348406,
+    "sample_rate": 32040.0,
+    "pixel_format": 2,
+    "video": [
+      256,
+      224
+    ],
+    "video_sha256": "04cd69d86f71d77ceef94ef359dd24b6cb68b0ed2c1f623a79e48aa9c887bd64",
+    "audio_frames": 95962,
+    "audio_nonzero": true,
+    "ram_bytes": 131072,
+    "sram_bytes": 8192
+  },
+  "rom_sha256": "f77422454c7d5d3d857db4e2118d99c57a9c41229caac454982972fc215ec03a",
+  "boot": {
+    "ready": 1,
+    "sequence": 0,
+    "mode": 0,
+    "audio": {
+      "samples": 255748,
+      "peak": 13610,
+      "rms": 4137.07,
+      "sha256": "d4a8c33287299a2abf731de8e332cba8d611799ba0254b574e9c1727024ea065"
+    }
+  },
+  "rooms": [
+    {
+      "requested_room": 0,
+      "actual_room": 0,
+      "region": 0,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 1,
+      "sequence_after": 3,
+      "audio": {
+        "samples": 113022,
+        "peak": 19069,
+        "rms": 4927.49,
+        "sha256": "b92971520a71f28b14d04eefd433c71b6f2ea058d89f5a763cf8e42e6bbb458f"
+      }
+    },
+    {
+      "requested_room": 8,
+      "actual_room": 8,
+      "region": 1,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 3,
+      "sequence_after": 5,
+      "audio": {
+        "samples": 113022,
+        "peak": 17112,
+        "rms": 3904.45,
+        "sha256": "fe53167a265944986d3f6a769520d993fa88c1c3ecc43ec18c9064c049a7fae5"
+      }
+    },
+    {
+      "requested_room": 16,
+      "actual_room": 16,
+      "region": 2,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 5,
+      "sequence_after": 7,
+      "audio": {
+        "samples": 113022,
+        "peak": 19547,
+        "rms": 4713.31,
+        "sha256": "584f5301665504c2cb5a47bb1994bfd47797e0c73e4180b2feff8316a08653bb"
+      }
+    },
+    {
+      "requested_room": 23,
+      "actual_room": 23,
+      "region": 3,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 7,
+      "sequence_after": 9,
+      "audio": {
+        "samples": 113022,
+        "peak": 15695,
+        "rms": 4446.3,
+        "sha256": "deb8ee4f1e22567ae2187d6473833550fe3a2b6ddf4a1620d56dbe34f91206d4"
+      }
+    },
+    {
+      "requested_room": 31,
+      "actual_room": 31,
+      "region": 4,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 9,
+      "sequence_after": 11,
+      "audio": {
+        "samples": 113022,
+        "peak": 16544,
+        "rms": 4425.73,
+        "sha256": "390efc3ed80f0e22945da6195ee9fdba0f9de2e9cabf3854ac80ad362552d01d"
+      }
+    },
+    {
+      "requested_room": 38,
+      "actual_room": 38,
+      "region": 5,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 11,
+      "sequence_after": 13,
+      "audio": {
+        "samples": 113022,
+        "peak": 19371,
+        "rms": 4656.67,
+        "sha256": "834be167e1c9075d04109642939004830d9350704f73a79b81abb8ed37cc2708"
+      }
+    },
+    {
+      "requested_room": 46,
+      "actual_room": 46,
+      "region": 6,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 13,
+      "sequence_after": 15,
+      "audio": {
+        "samples": 113022,
+        "peak": 16741,
+        "rms": 4490.68,
+        "sha256": "c70a41d1884a627907e5a0fbc08df039134a9145acba9f8372a46e513fc7d9ae"
+      }
+    },
+    {
+      "requested_room": 53,
+      "actual_room": 53,
+      "region": 7,
+      "boss": 255,
+      "ready": 1,
+      "sequence_before": 15,
+      "sequence_after": 17,
+      "audio": {
+        "samples": 113022,
+        "peak": 19615,
+        "rms": 5619.92,
+        "sha256": "7ebca6546787291b7f2849f9820c980d859039c840a2d00f022710a220c50aee"
+      }
+    },
+    {
+      "requested_room": 7,
+      "actual_room": 7,
+      "region": 0,
+      "boss": 0,
+      "ready": 1,
+      "sequence_before": 17,
+      "sequence_after": 19,
+      "audio": {
+        "samples": 113022,
+        "peak": 18650,
+        "rms": 4560.88,
+        "sha256": "bdd3838e4aa37765de9fb1f5d783688d3511fff5937eba9b55fdef4b5577d226"
+      }
+    },
+    {
+      "requested_room": 59,
+      "actual_room": 59,
+      "region": 7,
+      "boss": 7,
+      "ready": 1,
+      "sequence_before": 19,
+      "sequence_after": 21,
+      "audio": {
+        "samples": 113020,
+        "peak": 19298,
+        "rms": 5008.22,
+        "sha256": "6a63a8a2e247be3b594b13fd83bfcd5ab29aab65004f7c7f513c59d57106e522"
+      }
+    }
+  ],
+  "combat": {
+    "frames": 180,
+    "seq_before": 21,
+    "seq_after": 26,
+    "audio": {
+      "samples": 191924,
+      "peak": 17129,
+      "rms": 5103.15,
+      "sha256": "22ad2f8b889d1d93077a89eaf59bdcbcf21ad857f34641d6a825ca86c0e9888e"
+    },
+    "hp": 100,
+    "mode": 1
+  },
+  "test_instrumentation": "Test writes checkpoint and return-potion inventory to WRAM to select rooms; emulated game CPU performs transitions and audio commands."
+}

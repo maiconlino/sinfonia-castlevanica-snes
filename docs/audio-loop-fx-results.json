@@ -1,0 +1,109 @@
+{
+  "loops": [
+    {
+      "theme": "castle",
+      "tested_seconds": 77,
+      "loop_seconds": 73.728,
+      "post_loop_rms": 6270.78
+    },
+    {
+      "theme": "hauntedlibrary",
+      "tested_seconds": 76,
+      "loop_seconds": 72.192,
+      "post_loop_rms": 5095.07
+    },
+    {
+      "theme": "mythicgarden",
+      "tested_seconds": 70,
+      "loop_seconds": 66.816,
+      "post_loop_rms": 6108.71
+    },
+    {
+      "theme": "crypt",
+      "tested_seconds": 83,
+      "loop_seconds": 79.872,
+      "post_loop_rms": 5831.05
+    },
+    {
+      "theme": "reservoir",
+      "tested_seconds": 83,
+      "loop_seconds": 79.872,
+      "post_loop_rms": 5639.24
+    },
+    {
+      "theme": "giantclocktower",
+      "tested_seconds": 69,
+      "loop_seconds": 65.664,
+      "post_loop_rms": 6089.42
+    },
+    {
+      "theme": "observatory",
+      "tested_seconds": 91,
+      "loop_seconds": 87.04,
+      "post_loop_rms": 5983.0
+    },
+    {
+      "theme": "agicore",
+      "tested_seconds": 70,
+      "loop_seconds": 66.56,
+      "post_loop_rms": 7519.41
+    },
+    {
+      "theme": "boss",
+      "tested_seconds": 69,
+      "loop_seconds": 65.28,
+      "post_loop_rms": 5855.27
+    },
+    {
+      "theme": "finalboss",
+      "tested_seconds": 77,
+      "loop_seconds": 73.728,
+      "post_loop_rms": 6617.97
+    },
+    {
+      "theme": "victory",
+      "tested_seconds": 35,
+      "loop_seconds": 31.744,
+      "post_loop_rms": 5155.54
+    }
+  ],
+  "effects": [
+    {
+      "effect": 1,
+      "tested_seconds": 2,
+      "difference_rms": 1100.12,
+      "peak": 22437
+    },
+    {
+      "effect": 2,
+      "tested_seconds": 2,
+      "difference_rms": 3733.61,
+      "peak": 27188
+    },
+    {
+      "effect": 3,
+      "tested_seconds": 2,
+      "difference_rms": 5473.09,
+      "peak": 27664
+    },
+    {
+      "effect": 4,
+      "tested_seconds": 2,
+      "difference_rms": 4598.36,
+      "peak": 25887
+    },
+    {
+      "effect": 5,
+      "tested_seconds": 2,
+      "difference_rms": 5419.12,
+      "peak": 26262
+    },
+    {
+      "effect": 6,
+      "tested_seconds": 2,
+      "difference_rms": 5194.87,
+      "peak": 27080
+    }
+  ],
+  "limitation": "FX subroutines executed directly in emulated SPC; CPU port exchange must be validated in the full SNES ROM."
+}

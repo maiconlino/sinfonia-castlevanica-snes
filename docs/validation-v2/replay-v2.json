@@ -1,0 +1,22 @@
+{
+  "core": "Snes9x",
+  "version": "1.63 921f9f7",
+  "frames": 11621,
+  "fps": 60.098811862348406,
+  "sample_rate": 32040.0,
+  "pixel_format": 2,
+  "video": [
+    256,
+    224
+  ],
+  "video_sha256": "4199e5081845bf529146bb5bb057c1d401940d9daa4279af07d18827ef87df97",
+  "audio_frames": 2190065,
+  "audio_nonzero": true,
+  "ram_bytes": 131072,
+  "sram_bytes": 8192,
+  "completed": true,
+  "rooms": 60,
+  "bosses": 10,
+  "items": 60,
+  "deaths": 0
+}

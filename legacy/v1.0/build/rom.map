@@ -1,0 +1,58 @@
+Modules list:
+-------------
+main.o:
+    CODE              Offs=000000  Size=00302D  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=002081  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=000098  Align=00001  Fill=0000
+    STATE             Offs=000000  Size=000292  Align=00001  Fill=0000
+    WORK              Offs=000000  Size=000028  Align=00001  Fill=0000
+    AUDIO             Offs=000000  Size=00622C  Align=00001  Fill=0000
+    OBJ               Offs=000000  Size=004100  Align=00001  Fill=0000
+    CHR0              Offs=000000  Size=008000  Align=00001  Fill=0000
+    CHR1              Offs=000000  Size=008000  Align=00001  Fill=0000
+    CHR2              Offs=000000  Size=008000  Align=00001  Fill=0000
+    CHR3              Offs=000000  Size=008000  Align=00001  Fill=0000
+    CHR4              Offs=000000  Size=008000  Align=00001  Fill=0000
+    CHR5              Offs=000000  Size=008000  Align=00001  Fill=0000
+    CHR6              Offs=000000  Size=008000  Align=00001  Fill=0000
+    CHR7              Offs=000000  Size=008000  Align=00001  Fill=0000
+    MAPS              Offs=000000  Size=004100  Align=00001  Fill=0000
+    HEADER            Offs=000000  Size=000040  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000000  000097  000098  00001
+STATE                 000500  000791  000292  00001
+WORK                  000A00  000A27  000028  00001
+CODE                  008000  00B02C  00302D  00001
+HEADER                00FFC0  00FFFF  000040  00001
+DATA                  018000  01A080  002081  00001
+OBJ                   028000  02C0FF  004100  00001
+CHR0                  038000  03FFFF  008000  00001
+CHR1                  048000  04FFFF  008000  00001
+CHR2                  058000  05FFFF  008000  00001
+CHR3                  068000  06FFFF  008000  00001
+CHR4                  078000  07FFFF  008000  00001
+CHR5                  088000  08FFFF  008000  00001
+CHR6                  098000  09FFFF  008000  00001
+CHR7                  0A8000  0AFFFF  008000  00001
+AUDIO                 0B8000  0BE22B  00622C  00001
+MAPS                  0C8000  0CC0FF  004100  00001
+
+
+Exports list by name:
+---------------------
+
+
+
+Exports list by value:
+----------------------
+
+
+
+Imports list:
+-------------
+

@@ -1,0 +1,372 @@
+{
+  "origin": 512,
+  "entry": 512,
+  "bytes": 25132,
+  "driver_bytes": 798,
+  "sha256": "b44882f6a23cea4ed486e99a9872af594e858af82b8f5657a1b6c520fc48092d",
+  "themes": [
+    {
+      "id": 0,
+      "key": "castle",
+      "title": "Catedral: O Juramento de Veludo",
+      "bpm_original": 104,
+      "bpm_snes": 104.167,
+      "rows": 512,
+      "duration_seconds": 73.728,
+      "address": "0xd00",
+      "bytes": 2052,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "organ",
+          "input_notes": 241
+        },
+        {
+          "voice": 1,
+          "instrument": "harpsi",
+          "input_notes": 256
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 64
+        },
+        {
+          "voice": 3,
+          "instrument": "strings",
+          "input_notes": 101
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "key": "hauntedlibrary",
+      "title": "Biblioteca: Marginalia dos Ausentes",
+      "bpm_original": 80,
+      "bpm_snes": 79.787,
+      "rows": 384,
+      "duration_seconds": 72.192,
+      "address": "0x1504",
+      "bytes": 1540,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "harpsi",
+          "input_notes": 174
+        },
+        {
+          "voice": 1,
+          "instrument": "pluck",
+          "input_notes": 192
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 64
+        },
+        {
+          "voice": 3,
+          "instrument": "choir",
+          "input_notes": 98
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "key": "mythicgarden",
+      "title": "Jardim: A Seiva e o Autômato",
+      "bpm_original": 86,
+      "bpm_snes": 86.207,
+      "rows": 384,
+      "duration_seconds": 66.816,
+      "address": "0x1b08",
+      "bytes": 1540,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "flute",
+          "input_notes": 185
+        },
+        {
+          "voice": 1,
+          "instrument": "pluck",
+          "input_notes": 288
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 64
+        },
+        {
+          "voice": 3,
+          "instrument": "strings",
+          "input_notes": 104
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "key": "crypt",
+      "title": "Subsolo: Os Nomes sob a Pedra",
+      "bpm_original": 72,
+      "bpm_snes": 72.115,
+      "rows": 384,
+      "duration_seconds": 79.872,
+      "address": "0x210c",
+      "bytes": 1540,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "organ",
+          "input_notes": 150
+        },
+        {
+          "voice": 1,
+          "instrument": "bell",
+          "input_notes": 36
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 24
+        },
+        {
+          "voice": 3,
+          "instrument": "choir",
+          "input_notes": 75
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "key": "reservoir",
+      "title": "Reservatório: Cânticos de Mercúrio",
+      "bpm_original": 96,
+      "bpm_snes": 96.154,
+      "rows": 512,
+      "duration_seconds": 79.872,
+      "address": "0x2710",
+      "bytes": 2052,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "bell",
+          "input_notes": 204
+        },
+        {
+          "voice": 1,
+          "instrument": "pluck",
+          "input_notes": 256
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 64
+        },
+        {
+          "voice": 3,
+          "instrument": "strings",
+          "input_notes": 101
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "key": "giantclocktower",
+      "title": "Torre: O Escapamento das Horas",
+      "bpm_original": 132,
+      "bpm_snes": 131.579,
+      "rows": 576,
+      "duration_seconds": 65.664,
+      "address": "0x2f14",
+      "bytes": 2308,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "harpsi",
+          "input_notes": 283
+        },
+        {
+          "voice": 1,
+          "instrument": "square",
+          "input_notes": 576
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 144
+        },
+        {
+          "voice": 3,
+          "instrument": "organ",
+          "input_notes": 302
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "key": "observatory",
+      "title": "Observatório: Paralaxe das Almas",
+      "bpm_original": 88,
+      "bpm_snes": 88.235,
+      "rows": 512,
+      "duration_seconds": 87.04,
+      "address": "0x3818",
+      "bytes": 2052,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "flute",
+          "input_notes": 208
+        },
+        {
+          "voice": 1,
+          "instrument": "bell",
+          "input_notes": 128
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 32
+        },
+        {
+          "voice": 3,
+          "instrument": "choir",
+          "input_notes": 112
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "key": "agicore",
+      "title": "Núcleo AGI: A Liturgia do Circuito",
+      "bpm_original": 144,
+      "bpm_snes": 144.231,
+      "rows": 640,
+      "duration_seconds": 66.56,
+      "address": "0x401c",
+      "bytes": 2564,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "square",
+          "input_notes": 316
+        },
+        {
+          "voice": 1,
+          "instrument": "harpsi",
+          "input_notes": 640
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 320
+        },
+        {
+          "voice": 3,
+          "instrument": "organ",
+          "input_notes": 387
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "key": "boss",
+      "title": "Arcontes: Ferro, Sangue e Memória",
+      "bpm_original": 148,
+      "bpm_snes": 147.059,
+      "rows": 640,
+      "duration_seconds": 65.28,
+      "address": "0x4a20",
+      "bytes": 2564,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "strings",
+          "input_notes": 316
+        },
+        {
+          "voice": 1,
+          "instrument": "harpsi",
+          "input_notes": 320
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 320
+        },
+        {
+          "voice": 3,
+          "instrument": "organ",
+          "input_notes": 378
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "key": "finalboss",
+      "title": "Último Protocolo: Réquiem para um Deus",
+      "bpm_original": 156,
+      "bpm_snes": 156.25,
+      "rows": 768,
+      "duration_seconds": 73.728,
+      "address": "0x5424",
+      "bytes": 3076,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "organ",
+          "input_notes": 382
+        },
+        {
+          "voice": 1,
+          "instrument": "square",
+          "input_notes": 768
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 384
+        },
+        {
+          "voice": 3,
+          "instrument": "choir",
+          "input_notes": 480
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "key": "victory",
+      "title": "Aurora: Os Vivos Escrevem o Amanhã",
+      "bpm_original": 120,
+      "bpm_snes": 120.968,
+      "rows": 256,
+      "duration_seconds": 31.744,
+      "address": "0x6028",
+      "bytes": 1028,
+      "roles": [
+        {
+          "voice": 0,
+          "instrument": "organ",
+          "input_notes": 52
+        },
+        {
+          "voice": 1,
+          "instrument": "harpsi",
+          "input_notes": 0
+        },
+        {
+          "voice": 2,
+          "instrument": "bass",
+          "input_notes": 16
+        },
+        {
+          "voice": 3,
+          "instrument": "strings",
+          "input_notes": 0
+        }
+      ]
+    }
+  ]
+}

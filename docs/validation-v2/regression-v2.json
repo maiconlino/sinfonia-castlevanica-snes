@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "rom_sha256": "e573ddc11b5d790f7346e46f3db352f2575deeec038171cf6e4afc650b222cdd",
+  "emulator": "Snes9x 1.63 921f9f7",
+  "hardware_fps": 60.098811862348406,
+  "logic_updates_per_emulated_frame": {
+    "samples": 48,
+    "min": 1,
+    "max": 1
+  },
+  "observed_running_poses": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "direction_change": "passed",
+  "jump_min_y": {
+    "tap_3_frames": 116,
+    "hold_28_frames": 57
+  },
+  "menu_pause": true,
+  "sram_restart_roundtrip": true,
+  "audio_output_nonzero": true,
+  "physical_hardware_tested": false,
+  "wrapping_note": "Only SRAM restore writes memory; gameplay uses controller input."
+}
