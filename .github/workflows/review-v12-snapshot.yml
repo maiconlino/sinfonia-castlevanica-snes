@@ -1,0 +1,19 @@
+name: Snapshot current source for SNES 1.2 review
+on:
+  push:
+    paths: ['.github/workflows/review-v12-snapshot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - run: git archive --format=zip HEAD > "${{ runner.temp }}/sinfonia-current-source.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sinfonia-current-source-v12-review
+          path: ${{ runner.temp }}/sinfonia-current-source.zip
+          retention-days: 7
