@@ -1,0 +1,94 @@
+{
+  "status": "passed",
+  "rom_sha256": "cc4aed7fbadcf86426d81bafc3bb8dc9a67199bf2badad0f6e65a8b60be6b5a4",
+  "core": "Snes9x1.63",
+  "checks": [
+    {
+      "name": "Natural start, pause and sanctuary save on Y",
+      "controlled": false,
+      "passed": true,
+      "expected": {
+        "checkpoint": 0,
+        "room": 0,
+        "hp": 120,
+        "mp": 80,
+        "weapon": 0,
+        "armor": 12,
+        "spell": 38,
+        "potion": 44
+      }
+    },
+    {
+      "name": "New emulator imports SRAM and SELECT restores expected character, equipment and checkpoint",
+      "controlled": false,
+      "passed": true
+    },
+    {
+      "name": "Corrupt SRAM is rejected and SELECT cannot continue it",
+      "controlled": false,
+      "passed": true
+    },
+    {
+      "name": "Controlled owned spell selects and equips using menu inputs; map uses visited rooms; travel locked before Library boss and succeeds after; B closes atlas into rendered gameplay",
+      "controlled": true,
+      "passed": true,
+      "injected": "spell39, visited/shrines IDs0,4,8,16, defeated boss1"
+    },
+    {
+      "name": "Controlled 100 gold permits 40-eco purchase, stack increments from3to4",
+      "controlled": true,
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "resumed-library-controlled.png",
+    "title.png",
+    "save-natural.png",
+    "page-debug1.png",
+    "atlas-locked-controlled.png",
+    "page-debug2.png",
+    "atlas-library-controlled.png",
+    "travel-library-controlled.png",
+    "first-room.png",
+    "inventory-natural.png",
+    "spell-equipped-controlled.png",
+    "page-debug0.png",
+    "shop-purchase-controlled.png",
+    "continued.png",
+    "title-with-save.png",
+    "corrupt-rejected.png",
+    "page-debug3.png"
+  ],
+  "visual_verification": {
+    "status": "passed",
+    "inspection": "Headers and footers looked absent in successive image-tool displays, but binary PNG pixel comparison confirms they are present and identical. Both WRAM and PPU VRAM also contain the expected text. No ROM rendering defect found.",
+    "pixel_comparisons": {
+      "header": {
+        "all_pixel_identical": true,
+        "sha256": [
+          "cc74487811126137439835829a5a26b93ac9b27e1b177b20f706ab5632596113",
+          "cc74487811126137439835829a5a26b93ac9b27e1b177b20f706ab5632596113",
+          "cc74487811126137439835829a5a26b93ac9b27e1b177b20f706ab5632596113"
+        ],
+        "bright_pixels": [
+          2200,
+          2200,
+          2200
+        ]
+      },
+      "footer": {
+        "all_pixel_identical": true,
+        "sha256": [
+          "4d0314f883637d8a56f0b9a77d78a4f04f4e4bf0dba864008eabf6e234e8a51d",
+          "4d0314f883637d8a56f0b9a77d78a4f04f4e4bf0dba864008eabf6e234e8a51d",
+          "4d0314f883637d8a56f0b9a77d78a4f04f4e4bf0dba864008eabf6e234e8a51d"
+        ],
+        "bright_pixels": [
+          3892,
+          3892,
+          3892
+        ]
+      }
+    }
+  }
+}

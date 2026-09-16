@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "core": "Snes9x",
+  "version": "1.63",
+  "state_size": 658,
+  "checks": [
+    "SaveGame writes entire state and CheckSave accepts valid checksum",
+    "LoadSave restores flags, item counts, completion, statistics and timer exactly",
+    "Header, schema, size, checksum and representative payload corruption rejected without loading",
+    "Inventory selection skips missing items; sword equips; permanent relic cannot overwrite slot",
+    "Ultimate weapon gate checks all four requirements including mist",
+    "Shop debits original price, enforces stack cap, rejects low funds and non-sanctuary/boss use",
+    "Fast travel is locked before Library boss and then reaches activated visited sanctuary",
+    "Y in pause menu restores and saves at sanctuary, while ordinary room cannot heal/save",
+    "Select changes pages and B resumes gameplay"
+  ],
+  "limits": "Test harness runs the real menu_save.s code in Snes9x. Engine display and room-entry functions are stubs; this does not replace integrated UI/rendering QA."
+}

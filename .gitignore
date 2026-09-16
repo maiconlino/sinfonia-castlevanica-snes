@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+build/*.o
+build/*.dbg
+build/qa/
+*.srm
+*.state
