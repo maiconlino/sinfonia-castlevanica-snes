@@ -2,7 +2,7 @@ name: Build and publish validated R2
 on:
   push:
     branches: ['release/snes-r2-validated']
-    paths: ['.github/workflows/release-r2-validated.yml', '.r2-delta/**']
+    paths: ['.github/workflows/release-r2-validated.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -21,52 +21,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Download the pinned source snapshot
-        run: gh run download 35102084663 --repo "$GITHUB_REPOSITORY" --name r2-source-snapshot --dir "$RUNNER_TEMP/source-snapshot"
-      - name: Verify every source fragment and reconstruct native sources
+      - name: Verify that the source and original inputs are committed
         run: |
-          python3 - <<'PY'
-          import base64,hashlib,json,os,tarfile,zlib
-          from pathlib import Path
-          def digest(b): return hashlib.sha256(b).hexdigest()
-          def safe(p):
-              p=Path(p)
-              assert not p.is_absolute() and '..' not in p.parts
-              return p
-          m=json.loads(Path('.r2-delta/manifest.json').read_text())
-          archive=Path(os.environ['RUNNER_TEMP'])/'source-snapshot/source-snapshot.tar.xz'
-          assert digest(archive.read_bytes())==m['snapshotSha256']
-          base=Path(os.environ['RUNNER_TEMP'])/'r2-base';base.mkdir()
-          with tarfile.open(archive,'r:xz') as t:
-              for member in t.getmembers():
-                  safe(member.name)
-                  assert member.isfile() or member.isdir()
-              t.extractall(base,filter='data')
-          chunks=[]
-          for i,expected in enumerate(m['partSha256']):
-              value=Path(f'.r2-delta/chunk-{i:02d}.txt').read_text().strip()
-              actual=digest(value.encode())
-              print('fragment',i,len(value),actual,flush=True)
-              assert actual==expected, f'Fragment {i} does not match the verified local source'
-              chunks.append(value)
-          assert len(chunks)==m['parts']
-          raw=zlib.decompress(base64.b64decode(''.join(chunks),validate=True))
-          assert digest(raw)==m['jsonSha256']
-          files=json.loads(raw)
-          for name,v in files.items():
-              path=safe(name)
-              if 'text' in v: text=v['text']
-              else:
-                  old=(base/safe(v['source'])).read_text()
-                  text=''.join(old[x[0]:x[1]] if isinstance(x,list) else x for x in v['parts'])
-              assert digest(text.encode())==v['sha256'],name
-              path.parent.mkdir(parents=True,exist_ok=True);path.write_text(text)
-          print('Verified native source files:',len(files))
-          PY
-      - name: Install the pinned graphics dependency
-        run: python3 -m pip install -r requirements-assets.txt numpy
-      - name: Recover hash-checked original campaign and scores
-        run: python3 tools/recover_inputs.py
+          test -f src/movement.s
+          test -f assets/data.json
+          test -f tools/original_scores.json
+          python3 -m pip install -r requirements-assets.txt numpy
       - name: Download and verify build tools and emulator
         run: |
           gh run download 35096305893 --repo "$GITHUB_REPOSITORY" --name native-snes-build-tools --dir "$RUNNER_TEMP/snes-tools"
@@ -75,34 +35,32 @@ jobs:
           chmod +x bin/ca65 bin/ld65
           echo "$RUNNER_TEMP/snes-tools/bin" >> "$GITHUB_PATH"
           echo "SNES_CORE=$RUNNER_TEMP/snes-tools/snes9x_libretro.so" >> "$GITHUB_ENV"
-      - name: Regenerate assets and compile the native ROM
+      - name: Rebuild the identical ROM and verify its native layout
         run: |
           python3 tools/build_content.py
           python3 tools/generate_graphics.py
           python3 tools/build_audio.py
           python3 tools/build.py
           echo '57d02a02c1346b2380707635c6c88be04cd50c781d34259d9f39e6c8be11d38f  build/sinfonia-castlevanica.sfc' | sha256sum -c -
-      - name: Validate graphics, hardware layout and movement
-        run: |
           python3 tests/validate_graphics.py
           python3 tests/validate_rom.py
-          python3 tests/test_movement_revision.py
-      - name: Complete all rooms and replay the recorded controller inputs
+          (cd dist && sha256sum *.smc *.sfc > SHA256SUMS)
+      - name: Verify movement, SRAM and the complete campaign in the emulator
         run: |
+          python3 tests/test_movement_revision.py
           python3 tests/adaptive_revision.py
           python3 tests/replay_revision.py
-      - name: Save the verified source, ROM and test evidence
+      - name: Commit the checksum manifest and fresh test evidence
         run: |
-          printf '__pycache__/\n*.pyc\nbuild/*.o\n' > .gitignore
-          git rm -r --ignore-unmatch .release-payload
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src tools tests assets docs dist README.md Makefile lorom.cfg requirements-assets.txt .gitignore
-          git add build/qa-revision build/labels.json build/labels.txt build/rom-info.json build/rom.map
+          git add dist/SHA256SUMS build/qa-revision
           if ! git diff --cached --quiet; then
-            git commit -m 'Publish verified R2 source, native ROM, new poses and complete emulator checks'
+            git commit -m 'Record final R2 checksums and repeated controller validation'
             git push origin HEAD:release/snes-r2-validated
           fi
+      - name: Package source without tools, credentials or external fonts
+        run: |
           python3 - <<'PY'
           import zipfile,os,hashlib
           from pathlib import Path
@@ -113,7 +71,7 @@ jobs:
           out=Path(os.environ['RUNNER_TEMP'])/'sinfonia-snes-r2-codigo.zip'
           with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,9) as z:
               for p in sorted(set(files)):
-                  if '__pycache__' not in p.parts and p.suffix not in ['.pyc','.srm']: z.write(p,str(p))
+                  if '__pycache__' not in p.parts and p.suffix not in ['.pyc','.srm','.ttf','.otf','.woff','.woff2']: z.write(p,str(p))
           print('Source ZIP SHA256:',hashlib.sha256(out.read_bytes()).hexdigest())
           PY
       - name: Publish public ROM and source downloads
@@ -135,11 +93,8 @@ jobs:
         if: failure()
         with:
           name: r2-diagnostic
-          include-hidden-files: true
           path: |
-            .r2-delta
-            assets/data.json
-            tools/original_scores.json
+            dist
             build/rom-info.json
             build/qa-revision
           retention-days: 7
