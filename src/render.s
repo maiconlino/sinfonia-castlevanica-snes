@@ -9,6 +9,11 @@ DrawGame:
  lda #$30
  sta sattr
  stz ssize
+ lda inv
+ jeq @hero
+ lda frame
+ and #4
+ jne @enemies
 @hero:
  lda px
  sta sx
@@ -48,69 +53,45 @@ DrawGame:
  stz ssize
  jmp @enemies
 @human:
- jsr SelectHeroFrame
- lda px
- sec
- sbc #8
- sta sx
- lda py
- sec
- sbc #16
- sta sy
- lda #0
- sta stile
- lda #1
- sta ssize
- lda inv
- jeq @heroattr
- cmp #60
- jcs @heroattr
  lda frame
- and #4
- jeq @heroattr
- lda #$3e
- sta sattr
-@heroattr:
- lda face
+ lsr
+ lsr
+ lsr
+ and #3
+ asl
+ sta stile
+ lda pad
+ and #(JOY_LEFT|JOY_RIGHT)
+ jne :+
+ stz stile
+: lda attack
  jeq :+
- lda sattr
- ora #$40
+ lda #8
+ sta stile
+: lda face
+ jeq :+
+ lda #$70
  sta sattr
 : jsr AddSprite
- stz ssize
- lda sy
+ lda stile
  clc
  adc #32
- sta sy
- lda #4
- ldx face
- jeq :+
- lda #6
-: sta stile
- jsr AddSprite
- lda sx
+ sta stile
+ lda sy
  clc
  adc #16
- sta sx
- lda #6
- ldx face
- jeq :+
- lda #4
-: sta stile
+ sta sy
  jsr AddSprite
 @enemies:
- lda #$32
+ lda #$30
  sta sattr
- lda #1
- sta ssize
+ stz ssize
  stz loopidx
 @each:
  ldx loopidx
  lda enemyhp,x
  jeq @next
  lda enemyx,x
- sec
- sbc #8
  sta sx
  lda enemyy,x
  sta sy
@@ -119,28 +100,26 @@ DrawGame:
  tax
  lda f:EnemyTiles,x
  sta stile
- lda frame
- and #8
- jeq :+
+ jsr AddSprite
+ ldx loopidx
+ lda enemykind,x
+ cmp #1
+ beq @next
  lda stile
  clc
- adc #4
+ adc #32
  sta stile
-: lda #$32
- sta sattr
- lda sx
- cmp px
- jcc :+
- lda #$72
- sta sattr
-: jsr AddSprite
+ lda sy
+ clc
+ adc #16
+ sta sy
+ jsr AddSprite
 @next:
  inc loopidx
  inc loopidx
  lda loopidx
  cmp #8
  jcc @each
- stz ssize
  lda bosshp
  jeq @attacks
  lda bossx
@@ -528,7 +507,7 @@ IRQ:
 BitMasks: .word 1,2,4,8
 Decimal: .word 1000,100,10,1
 RegionCHRBank: .word 3,4,5,6,7,8,9,10
-EnemyTiles: .word 192,72,136,200
+EnemyTiles: .word 192,72,196,200
 BossTiles: .word 256,260,264,268,320,324,328,332,384,388
 OrbitX: .word 32,30,24,12,0,65524,65512,65506,65504,65506,65512,65524,0,12,24,30
 OrbitY: .word 12,24,36,42,44,42,36,24,12,0,65526,65520,65518,65520,65526,0
@@ -543,7 +522,7 @@ Controls1: .asciiz "Y ESPADA  B SALTO  A MAGIA"
 Controls2: .asciiz "X POCAO L ESQUIVA R ESPADA"
 Controls3: .asciiz "SELECT FORMA START MENU"
 CreditsLine: .asciiz "MAICON LINO / ASTRA  2026"
-Footer1: .asciiz "CIMA: ENTRAR   START: MENU"
+Footer1: .asciiz "CIMA PORTA/ALTAR  START MENU"
 HpLabel: .asciiz "V:"
 MpLabel: .asciiz "M:"
 LvLabel: .asciiz "N:"
@@ -564,68 +543,3 @@ Ending7: .asciiz "UMA LEMBRANCA PODE FICAR."
 Ending8: .asciiz "UMA VIDA PRECISA SEGUIR."
 Ending9: .asciiz "FIM / MAICON LINO E ASTRA"
 Ending10: .asciiz "START: EXPLORAR OS SEGREDOS"
-
-; Sixteen new animation frames, streamed into OBJ tiles 0..63 only.
-SelectHeroFrame:
- lda attack
- jeq @air
- cmp #7
- jcc :+
- lda #12
- jmp @set
-: cmp #4
- jcc :+
- lda #13
- jmp @set
-: lda #14
- jmp @set
-@air:
- lda grounded
- jne @walk
- lda #10
- ldx vy
- jmi @set
- lda #11
- jmp @set
-@walk:
- lda vx
- jeq @idle
- lda animtick
- lsr
- lsr
- and #7
- clc
- adc #2
- jmp @set
-@idle:
- lda frame
- lsr
- lsr
- lsr
- lsr
- lsr
- and #1
-@set:
- sta hero_frame
- rts
-UploadHeroFrame:
- lda hero_frame
- cmp hero_loaded
- jeq @done
- sta hero_loaded
- xba
- asl
- asl
- asl
- clc
- adc #.loword(HeroFrames)
- sta src
- lda #.bankbyte(HeroFrames)
- sta src+2
- lda #$4000
- sta t1
- lda #2048
- sta t0
- jsr DMAVRAM
-@done:
- rts
