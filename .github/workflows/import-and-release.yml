@@ -82,7 +82,6 @@ jobs:
           mkdir -p release/legacy
           cp build/sinfonia-castlevanica.sfc release/sinfonia-castlevanica-snes-v1.1.smc
           cp build/sinfonia-castlevanica.sfc release/sinfonia-castlevanica-snes-v1.1.sfc
-          cp build/rom-info.json release/rom-info-v1.1.json
           cp legacy/v1.0/build/sinfonia-castlevanica.sfc release/legacy/sinfonia-castlevanica-snes-v1.0.smc
           (cd release && sha256sum *.smc *.sfc legacy/*.smc > SHA256SUMS)
       - name: Save readable sources, generated assets, tests and ROMs
