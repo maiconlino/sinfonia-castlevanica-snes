@@ -22,7 +22,7 @@ jobs:
       - name: Prepare pinned compiler and emulator
         run: |
           set -eux
-          python -m pip install 'Pillow==12.3.0'
+          python -m pip install 'Pillow==12.2.0'
           git clone --depth 1 --branch V2.19 https://github.com/cc65/cc65.git "$RUNNER_TEMP/cc65"
           test "$(git -C "$RUNNER_TEMP/cc65" rev-parse HEAD)" = 555282497c3ecf8b313d87d5973093af19c35bd5
           make -C "$RUNNER_TEMP/cc65" -j4
