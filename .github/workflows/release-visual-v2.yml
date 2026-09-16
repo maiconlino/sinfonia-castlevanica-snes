@@ -38,16 +38,14 @@ jobs:
           baseline=stage/'legacy/v1.0'
           assert (baseline/'src/main.s').is_file(),'Original native source was not recovered'
           shutil.copytree(baseline,work)
-          # Diff boundaries are normalised; all hunks must apply without fuzz.
           patch=(root/'revision-v2/engine.patch').read_text().replace('\n diff --git','\ndiff --git')
           patchfile=temp/'native-v2.patch';patchfile.write_text(patch)
-          subprocess.run(['git','apply','--check',str(patchfile)],cwd=work,check=True)
-          subprocess.run(['git','apply',str(patchfile)],cwd=work,check=True)
+          subprocess.run(['git','apply','--recount','--check',str(patchfile)],cwd=work,check=True)
+          subprocess.run(['git','apply','--recount',str(patchfile)],cwd=work,check=True)
           for p in (root/'revision-v2/overrides').rglob('*'):
               if p.is_file():
                   dst=work/p.relative_to(root/'revision-v2/overrides');dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(p,dst)
           (work/'build/qa').mkdir(parents=True,exist_ok=True)
-          # The original ROM validation used a workspace-only absolute path.
           p=work/'tests/validate_rom.py'
           text=p.read_text()
           text=re.sub(r'''Path\(['"]/workspace/scratch/404cd925307f/sinfonia-snes['"]\)''','Path(__file__).resolve().parents[1]',text)
@@ -55,8 +53,7 @@ jobs:
           assert '/workspace/scratch/' not in text
           (work/'requirements-assets.txt').write_text('Pillow==12.2.0\nnumpy==2.3.5\n')
           (work/'docs/HISTORICO.md').write_text('# Documentação histórica\n\nOs documentos sem identificação v2 descrevem a versão original. Consulte README.md e docs/validation-v2 para a arte, física e testes atuais. As sequências antigas de controle não validam a física nova.\n')
-          with open(os.environ['GITHUB_ENV'],'a') as out:
-              out.write(f'BASELINE={baseline}\nNATIVE_V2={work}\n')
+          with open(os.environ['GITHUB_ENV'],'a') as out:out.write(f'BASELINE={baseline}\nNATIVE_V2={work}\n')
           PY
       - name: Reproduce the original ROM before making changes
         run: |
@@ -96,8 +93,7 @@ jobs:
           root=Path.cwd();work=Path(os.environ['NATIVE_V2']);base=Path(os.environ['BASELINE'])
           for folder in ['src','tools','tests','assets','docs']:
               shutil.copytree(work/folder,root/folder,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.o','*.dbg','*.wram','*.wav','*.srm','*.so'))
-          for name in ['Makefile','lorom.cfg','README.md','requirements-assets.txt','.gitignore']:
-              shutil.copy2(work/name,root/name)
+          for name in ['Makefile','lorom.cfg','README.md','requirements-assets.txt','.gitignore']:shutil.copy2(work/name,root/name)
           shutil.copytree(base,root/'legacy/v1.0',dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.o','*.dbg','*.wram','*.wav','*.srm','*.so'))
           roms=root/'roms';roms.mkdir(exist_ok=True)
           body=(work/'build/sinfonia-castlevanica.sfc').read_bytes()
