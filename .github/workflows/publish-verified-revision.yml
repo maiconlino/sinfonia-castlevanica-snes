@@ -1,0 +1,116 @@
+name: Build and publish verified SNES revision 1.1
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publish-verified-revision.yml'
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: publish-snes-revision
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover complete source archive
+        run: |
+          python3 - <<'PY'
+          import base64,io,tarfile
+          from pathlib import Path
+          if not Path('src/movement.s').is_file():
+              parts=sorted(Path('.source-import').glob('part-*.b64'))
+              assert len(parts)==6, 'Missing source archive fragment'
+              data=base64.b64decode(''.join(p.read_text().strip() for p in parts),validate=True)
+              assert len(data)==63344
+              with tarfile.open(fileobj=io.BytesIO(data),mode='r:xz') as archive:
+                  for member in archive.getmembers():
+                      p=Path(member.name)
+                      assert not p.is_absolute() and '..' not in p.parts
+                      assert member.isfile() or member.isdir()
+                  archive.extractall('.')
+          assert Path('src/movement.s').is_file()
+          PY
+      - name: Recover original public campaign and musical scores
+        run: |
+          python3 - <<'PY'
+          import json,urllib.request,hashlib
+          from pathlib import Path
+          base='https://raw.githubusercontent.com/maiconlino/sinfonia-castlevanica-futuristica/main/public/'
+          sources=[('campaign-data.mjs','assets/data.json',{'rooms','items','bosses'},'28b72f755aaa3673d0c3c082cd0a18d8cd962092c3a5ed2b008993ea7479d28d'),('scores.js','tools/original_scores.json',{'castle','boss','victory'},'3f03a543fd4542d0dc3dde4c30497e123e43b15bae76499866a80e5c66c3b237')]
+          for source,target,keys,expected in sources:
+              p=Path(target); p.parent.mkdir(parents=True,exist_ok=True)
+              if p.is_file():
+                  result=json.loads(p.read_text())
+              else:
+                  text=urllib.request.urlopen(base+source,timeout=45).read().decode('utf-8')
+                  result=None
+                  for i,c in enumerate(text):
+                      if c!='{': continue
+                      try: candidate,_=json.JSONDecoder().raw_decode(text[i:])
+                      except ValueError: continue
+                      if isinstance(candidate,dict) and keys<=candidate.keys():
+                          result=candidate;break
+                  assert result is not None, 'Could not decode '+source
+              canonical=json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
+              assert hashlib.sha256(canonical).hexdigest()==expected, 'Unexpected source data: '+source
+              p.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          PY
+      - name: Download verified native build tools
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 35096305893 --repo "$GITHUB_REPOSITORY" --name native-snes-build-tools --dir "$RUNNER_TEMP/snes-tools"
+          cd "$RUNNER_TEMP/snes-tools"
+          sha256sum -c SHA256SUMS
+          chmod +x bin/ca65 bin/ld65
+          echo "$RUNNER_TEMP/snes-tools/bin" >> "$GITHUB_PATH"
+          echo "SNES_CORE=$RUNNER_TEMP/snes-tools/snes9x_libretro.so" >> "$GITHUB_ENV"
+      - name: Install asset and test dependencies
+        run: python3 -m pip install 'Pillow>=10,<13' numpy
+      - name: Rebuild and verify original ROM separately
+        run: |
+          mkdir -p legacy/v1.0/assets release
+          cp assets/data.json legacy/v1.0/assets/
+          cp tools/original_scores.json legacy/v1.0/tools/
+          python3 legacy/v1.0/tools/build_content.py
+          python3 legacy/v1.0/tools/generate_graphics.py
+          python3 legacy/v1.0/tools/build_audio.py
+          python3 legacy/v1.0/tools/build.py
+          echo 'cc4aed7fbadcf86426d81bafc3bb8dc9a67199bf2badad0f6e65a8b60be6b5a4  legacy/v1.0/build/sinfonia-castlevanica.sfc' | sha256sum -c -
+          cp legacy/v1.0/build/sinfonia-castlevanica.sfc release/sinfonia-castlevanica-snes-v1.0.smc
+      - name: Compile revision and run emulator checks
+        run: |
+          python3 tools/build_content.py
+          python3 tools/refine_graphics.py
+          python3 tools/build_audio.py
+          python3 tools/build.py
+          echo '77f4656c28ac17d379255326d9d7287e90460e788fe7980b23d36f9a06afda97  build/sinfonia-castlevanica.sfc' | sha256sum -c -
+          python3 tests/validate_graphics_v11.py
+          python3 tests/validate_rom.py
+          python3 tests/validate_revision.py
+          cp build/sinfonia-castlevanica.sfc release/sinfonia-castlevanica-snes-v1.1.smc
+          cp build/sinfonia-castlevanica.sfc release/sinfonia-castlevanica-snes-v1.1.sfc
+          sha256sum release/*.smc release/*.sfc > release/SHA256SUMS
+      - name: Commit sources, assets, ROM and actual test results
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md .gitignore Makefile lorom.cfg requirements-assets.txt src tools tests assets docs legacy release
+          git add build/rom-info.json build/labels.json build/labels.txt build/rom.map
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish native SNES 1.1 sources, assets, ROMs and reproducible emulator validation'
+            git push origin HEAD:main
+          fi
+          git archive --format=zip HEAD > "$RUNNER_TEMP/sinfonia-snes-v1.1-codigo.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sinfonia-snes-v1.1-complete
+          path: |
+            ${{ runner.temp }}/sinfonia-snes-v1.1-codigo.zip
+            release/sinfonia-castlevanica-snes-v1.1.smc
+            release/SHA256SUMS
+          retention-days: 30
