@@ -1,0 +1,19 @@
+{
+  "archive_sha256": "0c63afb32a3b93b147c4c64283f5b4ebf7637d374fca591f043aac74ffc98c91",
+  "encoding": "base64", "compression": "xz", "files": 73,
+  "rom_legacy_sha256": "cc4aed7fbadcf86426d81bafc3bb8dc9a67199bf2badad0f6e65a8b60be6b5a4",
+  "rom_v11_sha256": "77f4656c28ac17d379255326d9d7287e90460e788fe7980b23d36f9a06afda97",
+  "parts": [
+    {"name":"part-00.b64","sha256":"417f86db0edd2166eda5261b8433a39c22e3dacfffb755a4fb1512ed2142d248"},
+    {"name":"part-01.b64","sha256":"f6664e1393201f22098dff1d5f3d28e36325d3438ba92a62232653b032e3c362"},
+    {"name":"part-02.b64","sha256":"eaa3c6b242cf8fc675e0d9b6634addbbb59ba5b6a38b854fc5177f10b8e0395f"},
+    {"name":"part-03.b64","sha256":"4d98ec1dba855e1ede2192548755aafca60e10eca0031fe39f0fbbb3341e1332"},
+    {"name":"part-04.b64","sha256":"c2fb16a199f6d4655edc132e74c4afd9b43f9f529eac126d6cebf6e5fb9981ff"},
+    {"name":"part-05.b64","sha256":"8e34f4a6bc369a65bcd39a3acaa3137c0983f5c6758bee0a49f2ffa6c5cd0996"}
+  ],
+  "recovered_verified_data": {
+    "source":"Anonymous public frontend of this same game; canonical JSON must match the original SNES inputs",
+    "data_sha256":"28b72f755aaa3673d0c3c082cd0a18d8cd962092c3a5ed2b008993ea7479d28d",
+    "scores_sha256":"3f03a543fd4542d0dc3dde4c30497e123e43b15bae76499866a80e5c66c3b237"
+  }
+}
