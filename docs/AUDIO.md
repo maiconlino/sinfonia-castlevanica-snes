@@ -1,3 +1,5 @@
+> Documento histórico da versão 1.0. Para a revisão atual, consulte REVISION_1.1.md.
+
 # SinfonIA, áudio nativo de Super Nintendo
 
 Este diretório contém um driver SPC700 original e os arranjos da trilha autoral do jogo de navegador. O driver e os instrumentos são novos. Não há música, samples, BIOS ou driver extraídos de jogos comerciais.

@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 build/*.o
 build/*.dbg
+build/labels.txt
 build/qa/
 *.srm
 *.state
+.import/

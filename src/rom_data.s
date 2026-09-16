@@ -38,6 +38,12 @@ RegionPal:
 .incbin "assets/bg_region5.pal"
 .incbin "assets/bg_region6.pal"
 .incbin "assets/bg_region7.pal"
+.segment "HERO"
+HeroFrames: .incbin "assets/hero_frames.chr"
+.segment "BOSS0"
+BossFrames0: .incbin "assets/boss_frames0.chr"
+.segment "BOSS1"
+BossFrames1: .incbin "assets/boss_frames1.chr"
 .segment "HEADER"
 .byte "SINFONIA CASTLEVANICA"
 .byte $20,$02,$0A,$03,$01,$33,$00

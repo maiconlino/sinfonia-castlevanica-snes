@@ -1,0 +1,69 @@
+{
+  "acceleration_8_8": [
+    {
+      "x": 80,
+      "fraction": 96,
+      "vx": 96
+    },
+    {
+      "x": 81,
+      "fraction": 32,
+      "vx": 192
+    },
+    {
+      "x": 82,
+      "fraction": 64,
+      "vx": 288
+    },
+    {
+      "x": 83,
+      "fraction": 192,
+      "vx": 384
+    },
+    {
+      "x": 85,
+      "fraction": 160,
+      "vx": 480
+    },
+    {
+      "x": 87,
+      "fraction": 160,
+      "vx": 512
+    },
+    {
+      "x": 89,
+      "fraction": 160,
+      "vx": 512
+    },
+    {
+      "x": 91,
+      "fraction": 160,
+      "vx": 512
+    },
+    {
+      "x": 93,
+      "fraction": 160,
+      "vx": 512
+    },
+    {
+      "x": 95,
+      "fraction": 160,
+      "vx": 512
+    }
+  ],
+  "release_stops_without_sticky_input": true,
+  "all_eight_walk_poses_reached": true,
+  "normal_ticks_per_600_emulated_frames": 600,
+  "jump_apex_y_short_and_held": [
+    134,
+    57
+  ],
+  "coherent_door_parts": true,
+  "active_boss_ticks_per_first_300_frames": 300,
+  "boss_sample_note": "600 frames include the boss defeat and the automatic SRAM save; a one-frame transition is allowed.",
+  "boss_ticks_per_600_emulated_frames": 599,
+  "boss_active_during_cadence_test": false,
+  "sram_reloaded_in_fresh_emulator": true,
+  "emulator": "Snes9x 1.63 libretro",
+  "physical_console_tested": false
+}

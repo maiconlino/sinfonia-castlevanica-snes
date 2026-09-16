@@ -1,0 +1,492 @@
+[
+  {
+    "event": "room",
+    "id": 0,
+    "frame": 575,
+    "hp": 120,
+    "owned": 5
+  },
+  {
+    "event": "room",
+    "id": 1,
+    "frame": 1139,
+    "hp": 120,
+    "owned": 6
+  },
+  {
+    "event": "room",
+    "id": 2,
+    "frame": 1720,
+    "hp": 112,
+    "owned": 7
+  },
+  {
+    "event": "room",
+    "id": 4,
+    "frame": 2256,
+    "hp": 120,
+    "owned": 8
+  },
+  {
+    "event": "room",
+    "id": 6,
+    "frame": 2752,
+    "hp": 113,
+    "owned": 8
+  },
+  {
+    "event": "boss",
+    "id": 0,
+    "frames": 184,
+    "room": 7,
+    "hp": 128
+  },
+  {
+    "event": "room",
+    "id": 7,
+    "frame": 3433,
+    "hp": 128,
+    "owned": 10
+  },
+  {
+    "event": "room",
+    "id": 8,
+    "frame": 3969,
+    "hp": 128,
+    "owned": 11
+  },
+  {
+    "event": "room",
+    "id": 9,
+    "frame": 4447,
+    "hp": 128,
+    "owned": 12
+  },
+  {
+    "event": "room",
+    "id": 10,
+    "frame": 4965,
+    "hp": 123,
+    "owned": 13
+  },
+  {
+    "event": "room",
+    "id": 11,
+    "frame": 5482,
+    "hp": 123,
+    "owned": 14
+  },
+  {
+    "event": "room",
+    "id": 12,
+    "frame": 6018,
+    "hp": 132,
+    "owned": 15
+  },
+  {
+    "event": "boss",
+    "id": 1,
+    "frames": 245,
+    "room": 15,
+    "hp": 136
+  },
+  {
+    "event": "room",
+    "id": 15,
+    "frame": 6678,
+    "hp": 136,
+    "owned": 17
+  },
+  {
+    "event": "room",
+    "id": 16,
+    "frame": 7219,
+    "hp": 136,
+    "owned": 17
+  },
+  {
+    "event": "room",
+    "id": 17,
+    "frame": 7714,
+    "hp": 140,
+    "owned": 18
+  },
+  {
+    "event": "room",
+    "id": 18,
+    "frame": 8252,
+    "hp": 130,
+    "owned": 19
+  },
+  {
+    "event": "room",
+    "id": 19,
+    "frame": 8800,
+    "hp": 140,
+    "owned": 20
+  },
+  {
+    "event": "room",
+    "id": 21,
+    "frame": 9252,
+    "hp": 140,
+    "owned": 21
+  },
+  {
+    "event": "boss",
+    "id": 2,
+    "frames": 306,
+    "room": 22,
+    "hp": 144
+  },
+  {
+    "event": "room",
+    "id": 22,
+    "frame": 10035,
+    "hp": 144,
+    "owned": 22
+  },
+  {
+    "event": "room",
+    "id": 23,
+    "frame": 10583,
+    "hp": 144,
+    "owned": 23
+  },
+  {
+    "event": "room",
+    "id": 24,
+    "frame": 11047,
+    "hp": 148,
+    "owned": 24
+  },
+  {
+    "event": "room",
+    "id": 25,
+    "frame": 11545,
+    "hp": 148,
+    "owned": 24
+  },
+  {
+    "event": "room",
+    "id": 27,
+    "frame": 12093,
+    "hp": 148,
+    "owned": 24
+  },
+  {
+    "event": "room",
+    "id": 28,
+    "frame": 12525,
+    "hp": 148,
+    "owned": 24
+  },
+  {
+    "event": "boss",
+    "id": 3,
+    "frames": 306,
+    "room": 30,
+    "hp": 152
+  },
+  {
+    "event": "room",
+    "id": 30,
+    "frame": 13327,
+    "hp": 152,
+    "owned": 26
+  },
+  {
+    "event": "room",
+    "id": 31,
+    "frame": 13885,
+    "hp": 152,
+    "owned": 26
+  },
+  {
+    "event": "room",
+    "id": 32,
+    "frame": 14354,
+    "hp": 152,
+    "owned": 28
+  },
+  {
+    "event": "room",
+    "id": 33,
+    "frame": 14840,
+    "hp": 156,
+    "owned": 29
+  },
+  {
+    "event": "room",
+    "id": 34,
+    "frame": 15388,
+    "hp": 156,
+    "owned": 30
+  },
+  {
+    "event": "room",
+    "id": 36,
+    "frame": 15875,
+    "hp": 156,
+    "owned": 32
+  },
+  {
+    "event": "boss",
+    "id": 4,
+    "frames": 428,
+    "room": 37,
+    "hp": 160
+  },
+  {
+    "event": "room",
+    "id": 37,
+    "frame": 16770,
+    "hp": 160,
+    "owned": 34
+  },
+  {
+    "event": "room",
+    "id": 38,
+    "frame": 17333,
+    "hp": 160,
+    "owned": 34
+  },
+  {
+    "event": "room",
+    "id": 39,
+    "frame": 17804,
+    "hp": 160,
+    "owned": 35
+  },
+  {
+    "event": "room",
+    "id": 40,
+    "frame": 18281,
+    "hp": 160,
+    "owned": 35
+  },
+  {
+    "event": "room",
+    "id": 41,
+    "frame": 18829,
+    "hp": 160,
+    "owned": 35
+  },
+  {
+    "event": "room",
+    "id": 42,
+    "frame": 19267,
+    "hp": 164,
+    "owned": 36
+  },
+  {
+    "event": "boss",
+    "id": 5,
+    "frames": 533,
+    "room": 45,
+    "hp": 168
+  },
+  {
+    "event": "room",
+    "id": 45,
+    "frame": 20276,
+    "hp": 168,
+    "owned": 38
+  },
+  {
+    "event": "room",
+    "id": 46,
+    "frame": 20824,
+    "hp": 168,
+    "owned": 38
+  },
+  {
+    "event": "room",
+    "id": 47,
+    "frame": 21305,
+    "hp": 168,
+    "owned": 39
+  },
+  {
+    "event": "room",
+    "id": 48,
+    "frame": 21779,
+    "hp": 172,
+    "owned": 39
+  },
+  {
+    "event": "room",
+    "id": 50,
+    "frame": 22252,
+    "hp": 172,
+    "owned": 40
+  },
+  {
+    "event": "room",
+    "id": 51,
+    "frame": 22800,
+    "hp": 172,
+    "owned": 41
+  },
+  {
+    "event": "boss",
+    "id": 6,
+    "frames": 300,
+    "room": 52,
+    "hp": 176
+  },
+  {
+    "event": "room",
+    "id": 52,
+    "frame": 23516,
+    "hp": 176,
+    "owned": 43
+  },
+  {
+    "event": "room",
+    "id": 53,
+    "frame": 24064,
+    "hp": 176,
+    "owned": 43
+  },
+  {
+    "event": "room",
+    "id": 54,
+    "frame": 24520,
+    "hp": 180,
+    "owned": 43
+  },
+  {
+    "event": "room",
+    "id": 55,
+    "frame": 25011,
+    "hp": 180,
+    "owned": 43
+  },
+  {
+    "event": "room",
+    "id": 57,
+    "frame": 25559,
+    "hp": 180,
+    "owned": 43
+  },
+  {
+    "event": "room",
+    "id": 58,
+    "frame": 25983,
+    "hp": 184,
+    "owned": 43
+  },
+  {
+    "event": "boss",
+    "id": 7,
+    "frames": 367,
+    "room": 59,
+    "hp": 188
+  },
+  {
+    "event": "room",
+    "id": 59,
+    "frame": 26875,
+    "hp": 188,
+    "owned": 43
+  },
+  {
+    "event": "room",
+    "id": 56,
+    "frame": 27847,
+    "hp": 192,
+    "owned": 44
+  },
+  {
+    "event": "room",
+    "id": 3,
+    "frame": 29073,
+    "hp": 200,
+    "owned": 45
+  },
+  {
+    "event": "room",
+    "id": 5,
+    "frame": 29857,
+    "hp": 204,
+    "owned": 46
+  },
+  {
+    "event": "room",
+    "id": 20,
+    "frame": 30864,
+    "hp": 208,
+    "owned": 49
+  },
+  {
+    "event": "room",
+    "id": 26,
+    "frame": 32085,
+    "hp": 212,
+    "owned": 50
+  },
+  {
+    "event": "room",
+    "id": 29,
+    "frame": 32568,
+    "hp": 216,
+    "owned": 52
+  },
+  {
+    "event": "boss",
+    "id": 8,
+    "frames": 184,
+    "room": 35,
+    "hp": 224
+  },
+  {
+    "event": "room",
+    "id": 35,
+    "frame": 34243,
+    "hp": 224,
+    "owned": 53
+  },
+  {
+    "event": "room",
+    "id": 43,
+    "frame": 35722,
+    "hp": 232,
+    "owned": 54
+  },
+  {
+    "event": "room",
+    "id": 44,
+    "frame": 36196,
+    "hp": 232,
+    "owned": 56
+  },
+  {
+    "event": "room",
+    "id": 14,
+    "frame": 37581,
+    "hp": 240,
+    "owned": 57
+  },
+  {
+    "event": "room",
+    "id": 13,
+    "frame": 38381,
+    "hp": 244,
+    "owned": 59
+  },
+  {
+    "event": "boss",
+    "id": 9,
+    "frames": 161,
+    "room": 49,
+    "hp": 260
+  },
+  {
+    "event": "room",
+    "id": 49,
+    "frame": 40536,
+    "hp": 260,
+    "owned": 60
+  }
+]

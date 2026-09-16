@@ -53,35 +53,56 @@ DrawGame:
  stz ssize
  jmp @enemies
 @human:
- lda frame
- lsr
- lsr
- lsr
- and #3
- asl
- sta stile
- lda pad
- and #(JOY_LEFT|JOY_RIGHT)
- jne :+
- stz stile
-: lda attack
- jeq :+
- lda #8
- sta stile
-: lda face
+ jsr ChooseHeroFrame
+ lda face
  jeq :+
  lda #$70
  sta sattr
-: jsr AddSprite
- lda stile
+:
+ lda px
+ sec
+ sbc #8
+ sta hero_originx
+ lda py
+ sec
+ sbc #16
+ sta hero_originy
+ stz hero_part
+@part:
+ lda hero_part
+ and #1
+ asl
+ asl
+ asl
+ asl
+ sta t0
+ lda face
+ jeq :+
+ lda #16
+ sec
+ sbc t0
+ sta t0
+: lda hero_originx
  clc
- adc #32
- sta stile
- lda sy
+ adc t0
+ sta sx
+ lda hero_part
+ lsr
+ asl
+ asl
+ asl
+ asl
  clc
- adc #16
+ adc hero_originy
  sta sy
+ lda hero_part
+ asl
+ sta stile
  jsr AddSprite
+ inc hero_part
+ lda hero_part
+ cmp #6
+ jcc @part
 @enemies:
  lda #$30
  sta sattr
@@ -95,16 +116,40 @@ DrawGame:
  sta sx
  lda enemyy,x
  sta sy
+ lda enemyx,x
+ cmp px
+ jcc :+
+ lda #$70
+ jmp :++
+: lda #$30
+: sta sattr
  lda enemykind,x
+ cmp #1
+ jne @groundenemy
+ lda frame
+ lsr
+ and #4
+ clc
+ adc #72
+ sta stile
+ lda #1
+ sta ssize
+ jsr AddSprite
+ stz ssize
+ jmp @next
+@groundenemy:
  asl
  tax
  lda f:EnemyTiles,x
  sta stile
- jsr AddSprite
- ldx loopidx
- lda enemykind,x
- cmp #1
- beq @next
+ lda frame
+ and #8
+ jeq :+
+ lda stile
+ clc
+ adc #2
+ sta stile
+: jsr AddSprite
  lda stile
  clc
  adc #32
@@ -122,15 +167,23 @@ DrawGame:
  jcc @each
  lda bosshp
  jeq @attacks
- lda bossx
- sta sx
- lda #136
- sta sy
+ lda frame
+ lsr
+ lsr
+ lsr
+ lsr
+ lsr
+ and #1
+ sta t0
  lda boss
  asl
- tax
- lda f:BossTiles,x
- sta stile
+ clc
+ adc t0
+ sta bossartframe
+ lda bossx
+ sec
+ sbc #16
+ sta boss_originx
  lda #1
  sta ssize
  lda #$30
@@ -147,9 +200,74 @@ DrawGame:
  jeq :+
  lda #$34
  sta sattr
-: jsr AddSprite
+: stz boss_part
+@bosspart:
+ lda boss_part
+ and #1
+ asl
+ asl
+ asl
+ asl
+ asl
+ clc
+ adc boss_originx
+ sta sx
+ lda boss_part
+ lsr
+ asl
+ asl
+ asl
+ asl
+ asl
+ clc
+ adc #120
+ sta sy
+ lda boss_part
+ asl
+ asl
+ clc
+ adc #256
+ sta stile
+ jsr AddSprite
+ inc boss_part
+ lda boss_part
+ cmp #4
+ jcc @bosspart
  stz ssize
 @attacks:
+ lda grounded
+ jeq @swordeffect
+ lda vx
+ jeq @swordeffect
+ lda frame
+ and #7
+ cmp #3
+ jcs @swordeffect
+ lda px
+ sec
+ sbc #7
+ sta sx
+ lda face
+ jeq :+
+ lda px
+ clc
+ adc #13
+ sta sx
+: lda py
+ clc
+ adc #21
+ sta sy
+ lda frame
+ and #8
+ lsr
+ lsr
+ clc
+ adc #136
+ sta stile
+ lda #$30
+ sta sattr
+ jsr AddSprite
+@swordeffect:
  lda #$30
  sta sattr
  lda attack
@@ -282,7 +400,7 @@ DrawGame:
  clc
  adc #(22*64+8*2)
  tax
- lda #$2070
+ lda #$3c70
  sta MAP,x
 @pnext:
  inc itemidx
@@ -291,8 +409,55 @@ DrawGame:
  jcc @pickup
  jsr DrawHUD
  rts
+ChooseHeroFrame:
+ lda attack
+ jeq @air
+ cmp #7
+ jcc :+
+ lda #12
+ jmp @set
+: cmp #3
+ jcc :+
+ lda #13
+ jmp @set
+: lda #14
+ jmp @set
+@air:
+ lda grounded
+ jne @land
+ lda vy
+ jmi :+
+ lda #11
+ jmp @set
+: lda #10
+ jmp @set
+@land:
+ lda landtimer
+ jeq @walk
+ lda #15
+ jmp @set
+@walk:
+ lda vx
+ jeq @idle
+ lda walkphase
+ xba
+ and #7
+ clc
+ adc #2
+ jmp @set
+@idle:
+ lda frame
+ lsr
+ lsr
+ lsr
+ lsr
+ lsr
+ and #1
+@set:
+ sta heroframe
+ rts
 DrawHUD:
- lda #$2000
+ lda #$3c00
  sta textcolor
  TEXT HpLabel,0,1
  lda #6
@@ -337,10 +502,10 @@ DrawHUD:
  sec
  sbc t1
  sta t0
- lda #$2076
+ lda #$3c76
  jmp @put
 @empty:
- lda #$2077
+ lda #$3c77
 @put:
  sta MAP,x
  inx
@@ -435,7 +600,7 @@ EndingScreen:
  jsr Blank
  jsr ClearMap
  jsr ClearOAM
- lda #$2000
+ lda #$3c00
  sta textcolor
  TEXT Ending1,3,3
  TEXT Ending2,6,2
@@ -474,9 +639,11 @@ SFX:
  plx
  rts
 Music:
+ sta soundcmd
+TryMusic:
+ lda soundcmd
  cmp soundarg
- beq @same
- sta soundarg
+ jeq @same
  phx
  phy
  tax
@@ -486,6 +653,10 @@ Music:
  jsr AudioCommand
  rep #$20
  .a16
+ jcs @pending
+ lda soundcmd
+ sta soundarg
+@pending:
  ply
  plx
 @same:rts

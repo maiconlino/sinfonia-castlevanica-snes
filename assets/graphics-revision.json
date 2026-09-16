@@ -1,59 +1,79 @@
 {
-  "version": "1.1",
-  "hero_frames": 16,
-  "hero_canvas": [
-    32,
-    48
-  ],
-  "hero_dma_bytes": 2048,
+  "revision": "1.1",
+  "format": "SNES 4bpp, per-tile CGRAM palette, streamed six-OBJ hero",
   "regions": [
     {
-      "region": 0,
-      "tiles": 663,
-      "palette_banks": 8
+      "id": 0,
+      "tiles": 675,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
     },
     {
-      "region": 1,
-      "tiles": 781,
-      "palette_banks": 8
+      "id": 1,
+      "tiles": 790,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
     },
     {
-      "region": 2,
-      "tiles": 712,
-      "palette_banks": 8
+      "id": 2,
+      "tiles": 778,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
     },
     {
-      "region": 3,
-      "tiles": 698,
-      "palette_banks": 8
-    },
-    {
-      "region": 4,
-      "tiles": 730,
-      "palette_banks": 8
-    },
-    {
-      "region": 5,
-      "tiles": 782,
-      "palette_banks": 8
-    },
-    {
-      "region": 6,
-      "tiles": 630,
-      "palette_banks": 8
-    },
-    {
-      "region": 7,
+      "id": 3,
       "tiles": 718,
-      "palette_banks": 8
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 4,
+      "tiles": 731,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 5,
+      "tiles": 762,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 6,
+      "tiles": 666,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
+    },
+    {
+      "id": 7,
+      "tiles": 720,
+      "chrBytes": 32768,
+      "mapBytes": 2048,
+      "paletteBytes": 256
     }
   ],
-  "portal_tile_range": [
-    128,
-    147
-  ],
-  "secret_tile_range": [
-    148,
-    167
-  ]
+  "door": {
+    "first_tile": 128,
+    "tiles_per_variant": 24,
+    "width": 32,
+    "height": 48,
+    "palette": 6
+  },
+  "hero": {
+    "frames": 16,
+    "frame_bytes": 1024,
+    "canvas": [
+      32,
+      48
+    ],
+    "objects": 6,
+    "rom_bank": 13
+  }
 }

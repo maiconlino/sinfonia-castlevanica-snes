@@ -1,3 +1,5 @@
+> Documento histórico da versão 1.0. Para a revisão atual, consulte REVISION_1.1.md.
+
 # SinfonIA, arte nativa de Super Nintendo
 
 Assets originais desenhados por código Python para o porte SNES. Não contêm sprites, cenários nem dados extraídos de Castlevania ou de ROMs comerciais.

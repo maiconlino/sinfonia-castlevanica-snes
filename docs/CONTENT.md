@@ -1,3 +1,5 @@
+> Documento histórico da versão 1.0. Para a revisão atual, consulte REVISION_1.1.md.
+
 # Dados da campanha para SNES
 
 `data.json` é uma serialização integral do `DATA` exportado pelo jogo web, sem alterar IDs, nomes, itens, grafo de salas ou requisitos. `tools/build_content.py` converte essa fonte para `data.inc` (ca65), `tables.json` (arrays idênticos para testes) e `validation.json`.

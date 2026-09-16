@@ -5,6 +5,7 @@ all:
 assets:
 	$(PYTHON) tools/build_content.py
 	$(PYTHON) tools/generate_graphics.py
+	$(PYTHON) tools/refined_art.py
 	$(PYTHON) tools/build_audio.py
 check:
 	$(PYTHON) tests/validate_rom.py
