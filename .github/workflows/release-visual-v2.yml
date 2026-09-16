@@ -20,42 +20,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install reproducible test dependencies
+      - name: Install assembler and asset dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cc65
           python -m pip install 'Pillow==12.2.0' 'numpy==2.3.5'
-          ca65 --version
-      - name: Restore verified original in an isolated directory
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import os,shutil,subprocess,json,re
-          root=Path.cwd();temp=Path(os.environ['RUNNER_TEMP']);stage=temp/'native-source';work=temp/'native-v2'
-          stage.mkdir()
-          shutil.copytree(root/'.source-import',stage/'.source-import')
-          subprocess.run(['python',str(stage/'.source-import/restore.py')],check=True,cwd=stage)
-          baseline=stage/'legacy/v1.0'
-          assert (baseline/'src/main.s').is_file(),'Original native source was not recovered'
-          shutil.copytree(baseline,work)
-          patch=(root/'revision-v2/engine.patch').read_text().replace('\n diff --git','\ndiff --git')
-          patchfile=temp/'native-v2.patch';patchfile.write_text(patch)
-          subprocess.run(['git','apply','--recount','--check',str(patchfile)],cwd=work,check=True)
-          subprocess.run(['git','apply','--recount',str(patchfile)],cwd=work,check=True)
-          for p in (root/'revision-v2/overrides').rglob('*'):
-              if p.is_file():
-                  dst=work/p.relative_to(root/'revision-v2/overrides');dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(p,dst)
-          (work/'build/qa').mkdir(parents=True,exist_ok=True)
-          p=work/'tests/validate_rom.py'
-          text=p.read_text()
-          text=re.sub(r'''Path\(['"]/workspace/scratch/404cd925307f/sinfonia-snes['"]\)''','Path(__file__).resolve().parents[1]',text)
-          p.write_text(text)
-          assert '/workspace/scratch/' not in text
-          (work/'requirements-assets.txt').write_text('Pillow==12.2.0\nnumpy==2.3.5\n')
-          (work/'docs/HISTORICO.md').write_text('# Documentação histórica\n\nOs documentos sem identificação v2 descrevem a versão original. Consulte README.md e docs/validation-v2 para a arte, física e testes atuais. As sequências antigas de controle não validam a física nova.\n')
-          with open(os.environ['GITHUB_ENV'],'a') as out:out.write(f'BASELINE={baseline}\nNATIVE_V2={work}\n')
-          PY
-      - name: Reproduce the original ROM before making changes
+      - name: Prepare verified original and reviewed native changes
+        run: python revision-v2/prepare.py
+      - name: Reproduce original ROM
         run: |
           cd "$BASELINE"
           python tools/build_content.py
@@ -63,7 +35,7 @@ jobs:
           python tools/build_audio.py
           python tools/build.py
           echo 'cc4aed7fbadcf86426d81bafc3bb8dc9a67199bf2badad0f6e65a8b60be6b5a4  build/sinfonia-castlevanica.sfc' | sha256sum -c -
-      - name: Compile the tested revision and check every native pixel
+      - name: Reproduce tested revision and validate native tile layout
         run: |
           cd "$NATIVE_V2"
           python tools/build_content.py
@@ -73,30 +45,29 @@ jobs:
           echo 'e573ddc11b5d790f7346e46f3db352f2575deeec038171cf6e4afc650b222cdd  build/sinfonia-castlevanica.sfc' | sha256sum -c -
           python tests/validate_rom.py
           python tests/validate_graphics.py
-      - name: Build the pinned emulator
+      - name: Compile pinned Snes9x
         run: |
           git clone --depth 1 --branch 1.63 https://github.com/snes9xgit/snes9x.git "$RUNNER_TEMP/snes9x-v2"
           test "$(git -C "$RUNNER_TEMP/snes9x-v2" rev-parse HEAD)" = 921f9f7b83660eb44ad263022a57a4a029057c37
           make -C "$RUNNER_TEMP/snes9x-v2/libretro" -j4
           echo "SNES_CORE=$RUNNER_TEMP/snes9x-v2/libretro/snes9x_libretro.so" >> "$GITHUB_ENV"
-      - name: Verify controls, SRAM, all rooms, bosses and a second full replay
+      - name: Test controls, saved progress, complete campaign and independent replay
         run: |
           cd "$NATIVE_V2"
           python tests/test_revision.py
           python tests/playthrough_v2.py
           python tests/replay_revision.py
-      - name: Publish all readable sources, assets, ROM and test evidence to this branch
+      - name: Publish readable source, native resources and ROM without replacing main
         run: |
           python - <<'PY'
           from pathlib import Path
-          import os,shutil,hashlib,json
+          import os,shutil,hashlib
           root=Path.cwd();work=Path(os.environ['NATIVE_V2']);base=Path(os.environ['BASELINE'])
-          for folder in ['src','tools','tests','assets','docs']:
-              shutil.copytree(work/folder,root/folder,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.o','*.dbg','*.wram','*.wav','*.srm','*.so'))
+          ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.o','*.dbg','*.wram','*.wav','*.srm','*.so')
+          for folder in ['src','tools','tests','assets','docs']:shutil.copytree(work/folder,root/folder,dirs_exist_ok=True,ignore=ignore)
           for name in ['Makefile','lorom.cfg','README.md','requirements-assets.txt','.gitignore']:shutil.copy2(work/name,root/name)
-          shutil.copytree(base,root/'legacy/v1.0',dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.o','*.dbg','*.wram','*.wav','*.srm','*.so'))
-          roms=root/'roms';roms.mkdir(exist_ok=True)
-          body=(work/'build/sinfonia-castlevanica.sfc').read_bytes()
+          shutil.copytree(base,root/'legacy/v1.0',dirs_exist_ok=True,ignore=ignore)
+          roms=root/'roms';roms.mkdir(exist_ok=True);body=(work/'build/sinfonia-castlevanica.sfc').read_bytes()
           for ext in ['smc','sfc']:(roms/f'sinfonia-castlevanica-v2.{ext}').write_bytes(body)
           (roms/'SHA256SUMS').write_text(''.join(f'{hashlib.sha256(body).hexdigest()}  sinfonia-castlevanica-v2.{ext}\n' for ext in ['smc','sfc']))
           evidence=root/'docs/validation-v2';evidence.mkdir(parents=True,exist_ok=True)
@@ -108,19 +79,19 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src tools tests assets docs legacy/v1.0 roms Makefile lorom.cfg README.md requirements-assets.txt .gitignore
-          git diff --cached --quiet || git commit -m 'Release verified native v2: 16 poses, correct portals, subpixel physics and complete campaign regression'
+          git diff --cached --quiet || git commit -m 'Publish verified visual and motion v2 with original preserved and complete controller tests'
           git push origin HEAD:visual-motion-v2
           git archive --format=zip --prefix=sinfonia-castlevanica-snes/ HEAD -o "$RUNNER_TEMP/sinfonia-snes-v2-codigo.zip"
-      - name: Publish persistent ROM and source download
+      - name: Create permanent release downloads
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat > "$RUNNER_TEMP/notes-v2.md" <<'EOF'
-          ## SinfonIA SNES, revisão visual e de movimento 2.0
-          Protagonista 32×48 com 16 poses, oito de corrida. Movimento fracionário, salto variável, portas únicas 24×40 compostas por partes corretas, cenários em duas camadas e HUD compacto.
-          ROM recompilada com SHA-256 idêntico ao teste local. Validações de gráficos, boot, movimento, salto, áudio, SRAM e campanha completa: 60 salas, 10 chefes, 60 tipos de itens, zero mortes, somente por comandos. Uma segunda reprodução verifica novamente a conclusão.
-          A rota automatizada conhece o mapa e não mede duração humana. Sem teste em console físico. Inimigos e chefes ainda têm animação mais simples que o protagonista.
-          Fontes desta revisão na branch visual-motion-v2, preservando alterações paralelas de main. Versão original em legacy/v1.0. Abra a ROM nova sem carregar save states antigos; preserve seu arquivo .srm.
+          ## Revisão visual e de movimento 2.0
+          Protagonista 32×48 com 16 poses, oito de corrida. Movimento fracionário, salto variável, portas 24×40 com composição correta, cenários em duas camadas e HUD compacto.
+          SHA-256 idêntico à ROM testada localmente. Verificações de gráficos, controles, salto, áudio e SRAM. Campanha percorrida por comandos: 60 salas, 10 chefes e 60 tipos de itens. Segundo replay independente concluído.
+          Rota automatizada com conhecimento do mapa, sem alteração da memória do jogo. Não mede duração humana. Sem teste em console físico. Inimigos e chefes têm animação mais simples que o protagonista.
+          Fontes completas na branch visual-motion-v2. Original preservado em legacy/v1.0. Não carregue save states da ROM antiga; preserve seu .srm.
           EOF
           gh release view v2.0-visual >/dev/null 2>&1 || gh release create v2.0-visual --target "$(git rev-parse HEAD)" --title 'SinfonIA SNES 2.0: arte e movimento revisados' --notes-file "$RUNNER_TEMP/notes-v2.md"
           gh release upload v2.0-visual roms/*.smc roms/*.sfc roms/SHA256SUMS "$RUNNER_TEMP/sinfonia-snes-v2-codigo.zip"
