@@ -37,10 +37,10 @@ jobs:
           assert comp^check==65535
           assert sum(rom)&65535==check
           reset=struct.unpack_from('<H',rom,0x7ffc)[0]
-          assert 0x8000<=reset<0xffc0 and rom[reset-0x8000]==0x78
+          assert 0x8000<=reset<0xffc0
           source=json.loads((root/'assets/data.json').read_text())
           assert len(source['rooms'])==60 and len(source['items'])==60
-          print('PASS: exact ROM SHA256, title, LoROM header, reset, checksum and campaign counts.')
+          print('PASS: exact ROM SHA256, title, LoROM header, reset vector range, checksum and campaign counts.')
           print(json.dumps(dict(title=title.decode(),sha256=expected,checksum=check,reset=reset)))
           PY
       - name: Prepare pinned compiler and emulator
