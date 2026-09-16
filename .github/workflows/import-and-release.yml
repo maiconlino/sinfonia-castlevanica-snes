@@ -18,7 +18,18 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify and restore source files
-        run: python .source-import/restore.py
+        run: |
+          python .source-import/restore.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          # Make the original test's workspace reference portable; ROM code is unchanged.
+          p = Path('tests/validate_rom.py')
+          text = p.read_text()
+          text = re.sub(r'''Path\(['"]/workspace/scratch/404cd925307f/sinfonia-snes['"]\)''', 'Path(__file__).resolve().parents[1]', text)
+          p.write_text(text)
+          assert '/workspace/scratch/' not in text, 'Unresolved absolute path in ROM validation'
+          PY
       - name: Prepare pinned compiler and emulator
         run: |
           set -eux
