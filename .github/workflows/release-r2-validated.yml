@@ -1,0 +1,145 @@
+name: Build and publish validated R2
+on:
+  push:
+    branches: ['release/snes-r2-validated']
+    paths: ['.github/workflows/release-r2-validated.yml', '.r2-delta/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: sinfonia-r2-validated
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Download the pinned source snapshot
+        run: gh run download 35102084663 --repo "$GITHUB_REPOSITORY" --name r2-source-snapshot --dir "$RUNNER_TEMP/source-snapshot"
+      - name: Verify every source fragment and reconstruct native sources
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,json,os,tarfile,zlib
+          from pathlib import Path
+          def digest(b): return hashlib.sha256(b).hexdigest()
+          def safe(p):
+              p=Path(p)
+              assert not p.is_absolute() and '..' not in p.parts
+              return p
+          m=json.loads(Path('.r2-delta/manifest.json').read_text())
+          archive=Path(os.environ['RUNNER_TEMP'])/'source-snapshot/source-snapshot.tar.xz'
+          assert digest(archive.read_bytes())==m['snapshotSha256']
+          base=Path(os.environ['RUNNER_TEMP'])/'r2-base';base.mkdir()
+          with tarfile.open(archive,'r:xz') as t:
+              for member in t.getmembers():
+                  safe(member.name)
+                  assert member.isfile() or member.isdir()
+              t.extractall(base,filter='data')
+          chunks=[]
+          for i,expected in enumerate(m['partSha256']):
+              value=Path(f'.r2-delta/chunk-{i:02d}.txt').read_text().strip()
+              actual=digest(value.encode())
+              print('fragment',i,len(value),actual,flush=True)
+              assert actual==expected, f'Fragment {i} does not match the verified local source'
+              chunks.append(value)
+          assert len(chunks)==m['parts']
+          raw=zlib.decompress(base64.b64decode(''.join(chunks),validate=True))
+          assert digest(raw)==m['jsonSha256']
+          files=json.loads(raw)
+          for name,v in files.items():
+              path=safe(name)
+              if 'text' in v: text=v['text']
+              else:
+                  old=(base/safe(v['source'])).read_text()
+                  text=''.join(old[x[0]:x[1]] if isinstance(x,list) else x for x in v['parts'])
+              assert digest(text.encode())==v['sha256'],name
+              path.parent.mkdir(parents=True,exist_ok=True);path.write_text(text)
+          print('Verified native source files:',len(files))
+          PY
+      - name: Install the pinned graphics dependency
+        run: python3 -m pip install -r requirements-assets.txt numpy
+      - name: Recover hash-checked original campaign and scores
+        run: python3 tools/recover_inputs.py
+      - name: Download and verify build tools and emulator
+        run: |
+          gh run download 35096305893 --repo "$GITHUB_REPOSITORY" --name native-snes-build-tools --dir "$RUNNER_TEMP/snes-tools"
+          cd "$RUNNER_TEMP/snes-tools"
+          sha256sum -c SHA256SUMS
+          chmod +x bin/ca65 bin/ld65
+          echo "$RUNNER_TEMP/snes-tools/bin" >> "$GITHUB_PATH"
+          echo "SNES_CORE=$RUNNER_TEMP/snes-tools/snes9x_libretro.so" >> "$GITHUB_ENV"
+      - name: Regenerate assets and compile the native ROM
+        run: |
+          python3 tools/build_content.py
+          python3 tools/generate_graphics.py
+          python3 tools/build_audio.py
+          python3 tools/build.py
+          echo '57d02a02c1346b2380707635c6c88be04cd50c781d34259d9f39e6c8be11d38f  build/sinfonia-castlevanica.sfc' | sha256sum -c -
+      - name: Validate graphics, hardware layout and movement
+        run: |
+          python3 tests/validate_graphics.py
+          python3 tests/validate_rom.py
+          python3 tests/test_movement_revision.py
+      - name: Complete all rooms and replay the recorded controller inputs
+        run: |
+          python3 tests/adaptive_revision.py
+          python3 tests/replay_revision.py
+      - name: Save the verified source, ROM and test evidence
+        run: |
+          printf '__pycache__/\n*.pyc\nbuild/*.o\n' > .gitignore
+          git rm -r --ignore-unmatch .release-payload
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src tools tests assets docs dist README.md Makefile lorom.cfg requirements-assets.txt .gitignore
+          git add build/qa-revision build/labels.json build/labels.txt build/rom-info.json build/rom.map
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish verified R2 source, native ROM, new poses and complete emulator checks'
+            git push origin HEAD:release/snes-r2-validated
+          fi
+          python3 - <<'PY'
+          import zipfile,os,hashlib
+          from pathlib import Path
+          folders=['src','tools','tests','assets','docs','dist','build/qa-revision']
+          names=['README.md','Makefile','lorom.cfg','requirements-assets.txt','build/labels.json','build/labels.txt','build/rom-info.json','build/rom.map']
+          files=[Path(n) for n in names]
+          for folder in folders: files.extend(p for p in Path(folder).rglob('*') if p.is_file())
+          out=Path(os.environ['RUNNER_TEMP'])/'sinfonia-snes-r2-codigo.zip'
+          with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,9) as z:
+              for p in sorted(set(files)):
+                  if '__pycache__' not in p.parts and p.suffix not in ['.pyc','.srm']: z.write(p,str(p))
+          print('Source ZIP SHA256:',hashlib.sha256(out.read_bytes()).hexdigest())
+          PY
+      - name: Publish public ROM and source downloads
+        run: |
+          gh release create r2-validated-20260916 --repo "$GITHUB_REPOSITORY" --target release/snes-r2-validated --title 'Revisao R2: movimento, animacao e portas' --notes-file docs/REVISAO-2.md dist/sinfonia-castlevanica-snes-r2.smc dist/sinfonia-castlevanica-snes-r2.sfc dist/SHA256SUMS "$RUNNER_TEMP/sinfonia-snes-r2-codigo.zip"
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: sinfonia-r2-validated
+          path: |
+            ${{ runner.temp }}/sinfonia-snes-r2-codigo.zip
+            dist/sinfonia-castlevanica-snes-r2.smc
+            dist/SHA256SUMS
+            build/qa-revision/result.json
+            build/qa-revision/replay-result.json
+            build/qa-revision/movement-result.json
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: r2-diagnostic
+          include-hidden-files: true
+          path: |
+            .r2-delta
+            assets/data.json
+            tools/original_scores.json
+            build/rom-info.json
+            build/qa-revision
+          retention-days: 7
