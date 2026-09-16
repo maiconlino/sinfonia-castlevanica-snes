@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "acceleration_q8": [
+    96,
+    192,
+    288,
+    384,
+    480,
+    512
+  ],
+  "walk_poses": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "tap_jump_height_pixels": 21,
+  "held_jump_height_pixels": 75,
+  "active_game_ticks": 600,
+  "missed_ticks_in_600_frames": 0,
+  "sram_save_reload": true,
+  "sram_bytes": 8192,
+  "rom_sha256": "57d02a02c1346b2380707635c6c88be04cd50c781d34259d9f39e6c8be11d38f",
+  "physical_console_tested": false
+}
