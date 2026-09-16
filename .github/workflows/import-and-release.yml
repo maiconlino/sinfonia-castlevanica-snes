@@ -75,6 +75,7 @@ jobs:
           echo '77f4656c28ac17d379255326d9d7287e90460e788fe7980b23d36f9a06afda97  build/sinfonia-castlevanica.sfc' | sha256sum -c -
           python tests/validate_graphics_v11.py
           python tests/validate_rom.py
+          mkdir -p docs/revision-1.1
           python tests/validate_revision.py
       - name: Prepare distributable ROMs and checksums
         run: |
