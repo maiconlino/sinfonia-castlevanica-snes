@@ -1,0 +1,78 @@
+name: Restore original SNES project
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/restore-baseline.yml'
+permissions:
+  contents: write
+concurrency:
+  group: snes-source-restore
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify and expand the source transport
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, lzma
+          from pathlib import Path
+          parts = sorted(Path('import').glob('source-*.b64'))
+          assert len(parts) == 10, 'Incomplete source transport'
+          packed = b''.join(base64.b64decode(p.read_text().strip(), validate=True) for p in parts)
+          assert hashlib.sha256(packed).hexdigest() == '139c90a982b074caf5e393f53be7ebb3adec28921f8c037fd902d9e1a32069ca'
+          files = json.loads(lzma.decompress(packed))
+          scores = json.loads(files['tools/original_scores.json'])
+          for song in scores.values():
+              if isinstance(song.get('notes'), dict):
+                  columns = song['notes']
+                  song['notes'] = [{k: column[i] for k, column in columns.items() if column[i] is not None} for i in range(len(next(iter(columns.values()))))]
+          files['tools/original_scores.json'] = json.dumps(scores, ensure_ascii=False, separators=(',', ':')) + '\n'
+          for name, content in files.items():
+              p = Path(name)
+              assert not p.is_absolute() and '..' not in p.parts and '.github' not in p.parts and '.git' not in p.parts
+              p.parent.mkdir(parents=True, exist_ok=True)
+              p.write_text(content, encoding='utf-8')
+          print('Restored', len(files), 'source files with verified transport SHA-256')
+          PY
+      - name: Compile pinned native toolchain
+        run: |
+          git clone --depth 1 --branch V2.19 https://github.com/cc65/cc65.git "$RUNNER_TEMP/cc65"
+          test "$(git -C "$RUNNER_TEMP/cc65" rev-parse HEAD)" = 555282497c3ecf8b313d87d5973093af19c35bd5
+          make -C "$RUNNER_TEMP/cc65" -j4
+          echo "$RUNNER_TEMP/cc65/bin" >> "$GITHUB_PATH"
+      - name: Generate all assets and build baseline
+        run: |
+          python3 -m pip install 'Pillow>=10,<13'
+          python3 tools/build_content.py
+          python3 tools/generate_graphics.py
+          python3 tools/build_audio.py
+          python3 tools/build.py
+          python3 tests/validate_rom.py
+          python3 tests/validate_graphics.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, shutil
+          p=Path('build/sinfonia-castlevanica.sfc')
+          assert hashlib.sha256(p.read_bytes()).hexdigest() == 'cc4aed7fbadcf86426d81bafc3bb8dc9a67199bf2badad0f6e65a8b60be6b5a4', 'Baseline differs from delivered original'
+          d=Path('releases/v1-original'); d.mkdir(parents=True, exist_ok=True)
+          shutil.copyfile(p,d/'sinfonia-castlevanica-snes.sfc')
+          shutil.copyfile(p,d/'sinfonia-castlevanica-snes.smc')
+          shutil.copyfile('build/rom-info.json',d/'rom-info.json')
+          PY
+      - name: Commit ordinary source files and original ROM
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md Makefile lorom.cfg requirements-assets.txt .gitignore src tools assets tests docs releases
+          git add -f build/sinfonia-castlevanica.sfc build/rom-info.json build/labels.json build/labels.txt build/rom.map
+          git diff --cached --quiet || git commit -m 'Preserve complete original SNES game, source, assets, tests and matching ROM'
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sinfonia-snes-original
+          path: releases/v1-original/
+          retention-days: 30
