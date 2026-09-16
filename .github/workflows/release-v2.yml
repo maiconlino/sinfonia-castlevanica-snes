@@ -15,18 +15,33 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Verify and apply the reviewed source patch
+      - name: Restore verified baseline and apply reviewed v2 source
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import base64, hashlib, lzma, subprocess
+          import base64, hashlib, lzma, subprocess, json
+          # Earlier experimental revisions remain in Git history and releases.
+          # Use the authenticated original snapshot as the exact patch base.
+          packed=b''.join(base64.b64decode(p.read_text().strip(),validate=True) for p in sorted(Path('import').glob('source-*.b64')))
+          assert hashlib.sha256(packed).hexdigest()=='139c90a982b074caf5e393f53be7ebb3adec28921f8c037fd902d9e1a32069ca'
+          files=json.loads(lzma.decompress(packed))
+          scores=json.loads(files['tools/original_scores.json'])
+          for song in scores.values():
+              if isinstance(song.get('notes'),dict):
+                  c=song['notes'];song['notes']=[{k:v[i] for k,v in c.items() if v[i] is not None} for i in range(len(next(iter(c.values()))))]
+          files['tools/original_scores.json']=json.dumps(scores,ensure_ascii=False,separators=(',',':'))+'\n'
+          for name,content in files.items():
+              p=Path(name)
+              assert not p.is_absolute() and '..' not in p.parts and '.github' not in p.parts and '.git' not in p.parts
+              p.parent.mkdir(parents=True,exist_ok=True);p.write_text(content)
+          for name in ('tools/remaster_graphics.py','tests/validate_revision.py','docs/REVISION-2.md'):
+              if name not in files: Path(name).unlink(missing_ok=True)
           encoded=''.join(p.read_text().strip() for p in sorted(Path('revisions/v2').glob('patch-*.b64')))
           raw=base64.b64decode(encoded,validate=True)
           assert hashlib.sha256(raw).hexdigest()=='fa42d130bf1dd19bfced9746c20d5d44d492ed432da463185966a3072c73e1d8'
-          if not Path('docs/REVISION-2.md').exists():
-              p=Path('/tmp/revision-2.patch');p.write_bytes(lzma.decompress(raw))
-              subprocess.run(['git','apply','--check',str(p)],check=True)
-              subprocess.run(['git','apply',str(p)],check=True)
+          p=Path('/tmp/revision-2.patch');p.write_bytes(lzma.decompress(raw))
+          subprocess.run(['git','apply','--check',str(p)],check=True)
+          subprocess.run(['git','apply',str(p)],check=True)
           p=Path('tests/validate_revision.py')
           p.write_text(p.read_text().replace("'/mnt/data/releases/v2-refined.png'","str(R/'build/v2-refined.png')"))
           PY
@@ -68,9 +83,8 @@ jobs:
               shutil.copyfile('build/sinfonia-castlevanica.sfc',d/f'sinfonia-castlevanica-snes-v2.{ext}')
           for src in ('build/revision-tests.json','build/rom-info.json','build/v2-refined.png','docs/REVISION-2.md'):
               shutil.copyfile(src,d/Path(src).name)
-          roots=('src','tools','assets','docs','tests')
           with zipfile.ZipFile(d/'sinfonia-snes-v2-codigo.zip','w',zipfile.ZIP_DEFLATED) as z:
-              for root in roots:
+              for root in ('src','tools','assets','docs','tests'):
                   for p in sorted(Path(root).rglob('*')):
                       if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ('.pyc','.srm'):
                           z.write(p,'sinfonia-snes-v2/'+str(p))
