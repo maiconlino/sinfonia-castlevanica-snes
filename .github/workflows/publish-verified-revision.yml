@@ -16,6 +16,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Preserve latest repository changes before recovery
+        run: |
+          git fetch origin main
+          git checkout -B publish-work origin/main
       - name: Recover complete source archive
         run: |
           python3 - <<'PY'
@@ -114,10 +120,18 @@ jobs:
           git add build/rom-info.json build/labels.json build/labels.txt build/rom.map
           if ! git diff --cached --quiet; then
             git commit -m 'Publish native SNES 1.1 sources, assets, ROMs and reproducible emulator validation'
-            git push origin HEAD:main
           fi
           git archive --format=zip HEAD > "$RUNNER_TEMP/sinfonia-snes-v1.1-codigo.zip"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 3
+          done
+          echo 'Publication could not fast-forward; the validated artifact is preserved.' >&2
+          exit 1
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: sinfonia-snes-v1.1-complete
           path: |
@@ -125,6 +139,7 @@ jobs:
             release/sinfonia-castlevanica-snes-v1.1.smc
             release/SHA256SUMS
           retention-days: 30
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
