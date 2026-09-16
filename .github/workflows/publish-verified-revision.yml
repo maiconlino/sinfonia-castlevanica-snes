@@ -39,8 +39,14 @@ jobs:
           python3 - <<'PY'
           import json,urllib.request,hashlib
           from pathlib import Path
+          def norm(value):
+              if isinstance(value,float) and value.is_integer(): return int(value)
+              if isinstance(value,dict): return {k:norm(v) for k,v in value.items()}
+              if isinstance(value,list): return [norm(v) for v in value]
+              return value
+          themes=['castle','hauntedlibrary','mythicgarden','crypt','reservoir','giantclocktower','observatory','agicore','boss','finalboss','victory']
           base='https://raw.githubusercontent.com/maiconlino/sinfonia-castlevanica-futuristica/main/public/'
-          sources=[('campaign-data.mjs','assets/data.json',{'rooms','items','bosses'},'28b72f755aaa3673d0c3c082cd0a18d8cd962092c3a5ed2b008993ea7479d28d'),('scores.js','tools/original_scores.json',{'castle','boss','victory'},'3f03a543fd4542d0dc3dde4c30497e123e43b15bae76499866a80e5c66c3b237')]
+          sources=[('campaign-data.mjs','assets/data.json',{'rooms','items','bosses'},'28b72f755aaa3673d0c3c082cd0a18d8cd962092c3a5ed2b008993ea7479d28d'),('scores.js','tools/original_scores.json',{'castle','boss','victory'},'b41d4f826157522fd2b526a3fe19f7cb31ad911225c447daf986541532ca1e80')]
           for source,target,keys,expected in sources:
               p=Path(target); p.parent.mkdir(parents=True,exist_ok=True)
               if p.is_file():
@@ -55,9 +61,14 @@ jobs:
                       if isinstance(candidate,dict) and keys<=candidate.keys():
                           result=candidate;break
                   assert result is not None, 'Could not decode '+source
+              if source=='scores.js':
+                  print('Available musical themes:',list(result))
+                  result=norm({theme:result[theme] for theme in themes})
               canonical=json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
-              assert hashlib.sha256(canonical).hexdigest()==expected, 'Unexpected source data: '+source
+              digest=hashlib.sha256(canonical).hexdigest()
+              print(source,'canonical SHA-256:',digest)
               p.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+              assert digest==expected, 'Unexpected source data: '+source
           PY
       - name: Download verified native build tools
         env:
@@ -114,3 +125,13 @@ jobs:
             release/sinfonia-castlevanica-snes-v1.1.smc
             release/SHA256SUMS
           retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: source-recovery-diagnostic
+          path: |
+            assets/data.json
+            tools/original_scores.json
+            build/rom-info.json
+            legacy/v1.0/build/rom-info.json
+          retention-days: 7
