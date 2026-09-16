@@ -1,0 +1,44 @@
+{
+  "version": "1.1",
+  "rom_sha256": "77f4656c28ac17d379255326d9d7287e90460e788fe7980b23d36f9a06afda97",
+  "emulator": {
+    "core": "Snes9x",
+    "version": "1.63 921f9f7",
+    "frames": 106,
+    "fps": 60.098811862348406,
+    "sample_rate": 32040.0,
+    "pixel_format": 2,
+    "video": [
+      256,
+      224
+    ],
+    "video_sha256": "685e347ca28f071482627e424cb25b9bef090f5c1d27e389778c34ca36691bec",
+    "audio_frames": 56435,
+    "audio_nonzero": true,
+    "ram_bytes": 131072,
+    "sram_bytes": 8192
+  },
+  "checks": {
+    "boot": true,
+    "one_logic_tick_per_video_frame": true,
+    "eight_running_poses": true,
+    "subpixel_acceleration": true,
+    "no_continuing_drift_after_release": true,
+    "variable_jump_height_pixels": {
+      "tap": 20,
+      "hold": 54
+    },
+    "coyote_window": true,
+    "jump_buffer": true,
+    "double_jump": true,
+    "audio_nonzero": true,
+    "sram_written_by_shrine": true,
+    "state_bytes": 658,
+    "door_enters_different_room": true,
+    "continue_after_reset": true
+  },
+  "limitations": [
+    "Controlled physics scenarios set RAM explicitly.",
+    "No full v1.1 campaign replay or physical console test claimed."
+  ]
+}

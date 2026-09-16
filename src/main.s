@@ -95,6 +95,15 @@ soundarg: .res 2
 soundready: .res 2
 prevy: .res 2
 respawn: .res 2
+vx: .res 2
+xfrac: .res 2
+yfrac: .res 2
+grounded: .res 2
+coyote: .res 2
+jumpbuf: .res 2
+animtick: .res 2
+hero_frame: .res 2
+hero_loaded: .res 2
 
 .segment "STATE"
 state_begin:
@@ -175,7 +184,8 @@ Reset:
  sta $2105
  lda #$60
  sta $2107
- stz $2108
+ lda #$68
+ sta $2108
  stz $2109
  stz $210a
  stz $210b
@@ -184,6 +194,10 @@ Reset:
  stz $210d
  stz $210e
  stz $210e
+ stz $210f
+ stz $210f
+ stz $2110
+ stz $2110
  stz $211b
  stz $211b
  lda #$80
@@ -196,7 +210,7 @@ Reset:
  stz $2130
  stz $2131
  stz $2133
- lda #$11
+ lda #$13
  sta $212c
  stz $212d
  lda #$e0
@@ -342,6 +356,7 @@ UploadFrame:
  sta $420b
  rep #$20
  .a16
+ jsr UploadHeroFrame
  rts
 Blank:
  sep #$20
@@ -385,6 +400,8 @@ DMAVRAM:
  .a16
  rts
 LoadObjects:
+ lda #$ffff
+ sta hero_loaded
  lda #.loword(ObjCHR)
  sta src
  lda #.bankbyte(ObjCHR)
@@ -427,15 +444,11 @@ LoadRegion:
  sta t0
  jsr DMAVRAM
  lda region
- asl
- asl
- asl
- asl
- asl
+ xba
  clc
  adc #.loword(RegionPal)
  sta $4302
- lda #32
+ lda #256
  sta $4305
  sep #$20
  .a8
@@ -449,6 +462,22 @@ LoadRegion:
  sta $420b
  rep #$20
  .a16
+ ; BG2 retains the actual room behind transparent edges of BG1 portals.
+ lda region
+ xba
+ asl
+ asl
+ asl
+ clc
+ adc #.loword(RegionMaps)
+ sta src
+ lda #.bankbyte(RegionMaps)
+ sta src+2
+ lda #$6800
+ sta t1
+ lda #2048
+ sta t0
+ jsr DMAVRAM
  lda region
  sta oldregion
  rts
@@ -601,9 +630,21 @@ PrintNumber:
  jmp @sub
 @put:
  lda t2
+ jne @number
+ lda t4
+ jne @number
+ cpy #6
+ jeq @number
+ lda #0
+ jmp @printdigit
+@number:
+ lda #1
+ sta t4
+ lda t2
  clc
  adc #16
  ora #$2000
+@printdigit:
  sta MAP,x
  inx
  inx
@@ -756,6 +797,16 @@ Recalculate:
 @done:rts
 EnterRoom:
  jsr Blank
+ stz vx
+ stz xfrac
+ stz yfrac
+ stz jumpbuf
+ stz message
+ stz animtick
+ lda #1
+ sta grounded
+ lda #6
+ sta coyote
  lda #0
  sta form
  sta vy
@@ -953,10 +1004,10 @@ RoomMap:
  lda secrets,x
  and BitMasks,y
  jne @visible
- lda #105
+ lda #148
  jmp @tile
 @visible:
- lda #108
+ lda #128
 @tile:
  sta t0
  lda exitidx
@@ -965,18 +1016,30 @@ RoomMap:
  asl
  asl
  clc
- adc #(20*64+3*2)
- tax
+ adc #(18*64+2*2)
+ sta t1
+ lda #0
+ sta t2
+@doorrow:
+ ldx t1
+ ldy #4
+@doorcol:
  lda t0
- ora #$2000
- sta MAP+64,x
- sta MAP+128,x
- sta MAP+66,x
- sta MAP+130,x
- lda #$2066
+ ora #$0400
  sta MAP,x
- lda #$2067
- sta MAP+2,x
+ inc t0
+ inx
+ inx
+ dey
+ jne @doorcol
+ lda t1
+ clc
+ adc #64
+ sta t1
+ inc t2
+ lda t2
+ cmp #5
+ jne @doorrow
 @next:
  inc exitidx
  lda exitidx
@@ -998,7 +1061,7 @@ RoomMap:
  sta textpos
  lda room
  jsr NameRoom
- TEXT Footer1,27,1
+ TEXT Footer1,27,3
  rts
 GameTick:
  lda pressed
@@ -1122,202 +1185,7 @@ TickTimers:
  jcs @done
  inc hp
 @done:rts
-MovePlayer:
- lda py
- sta prevy
- lda #2
- sta t0
- lda form
- cmp #1
- jne @speed
- lda #3
- sta t0
-@speed:
- lda accessory
- cmp #28
- jne @armorspeed
- lda frame
- and #3
- jne @armorspeed
- inc t0
-@armorspeed:
- lda armor
- cmp #13
- jne @dash
- lda frame
- and #7
- jne @dash
- inc t0
-@dash:
- lda pressed
- and #JOY_L
- jeq @moving
- lda dashcd
- jne @moving
- lda #12
- sta dash
- lda #45
- sta dashcd
- lda #18
- sta inv
-@moving:
- lda dash
- jeq @directions
- lda #5
- sta t0
- lda face
- jeq @right
- jmp @left
-@directions:
- lda pad
- and #JOY_LEFT
- jne @left
- lda pad
- and #JOY_RIGHT
- jne @right
- jmp @jump
-@left:
- lda #1
- sta face
- lda px
- sec
- sbc t0
- cmp #8
- jcs :+
- lda #8
-: sta px
- jmp @jump
-@right:
- stz face
- lda px
- clc
- adc t0
- cmp #232
- jcc :+
- lda #232
-: sta px
-@jump:
- lda form
- cmp #2
- jcs @fly
- lda pressed
- and #JOY_B
- jeq @gravity
- lda #1
- sta t0
- lda inventory+62
- jeq :+
- inc t0
-: lda jumps
- cmp t0
- jcs @gravity
- inc jumps
- lda #$fff8
- sta vy
- lda #2
- jsr SFX
-@gravity:
- lda frame
- and #3
- jne @fall
- lda vy
- cmp #7
- jeq @fall
- inc vy
-@fall:
- lda py
- clc
- adc vy
- sta py
- cmp #40
- jcs @floor
- lda #40
- sta py
- stz vy
- jmp @floor
-@fly:
- lda pad
- and #(JOY_B|JOY_UP)
- jeq @flydown
- lda py
- sec
- sbc #2
- cmp #40
- jcs :+
- lda #40
-: sta py
- jmp @floor
-@flydown:
- lda py
- inc
- sta py
- lda pad
- and #JOY_DOWN
- jeq @floor
- inc py
-@floor:
- lda py
- cmp #152
- jcc @platforms
- lda #152
- sta py
- stz vy
- stz jumps
-@platforms:
- lda form
- cmp #2
- jcs @done
- lda vy
- jmi @done
- lda prevy
- cmp #104
- jcc @lower
- jeq @lower
- jmp @upper
-@lower:
- lda py
- cmp #104
- jcc @upper
- lda room
- and #1
- jeq :+
- lda #64
- jmp :++
-: lda #48
-: sta t0
- lda px
- clc
- adc #12
- cmp t0
- jcc @upper
- lda t0
- clc
- adc #56
- cmp px
- jcc @upper
- lda #104
- sta py
- stz vy
- stz jumps
-@upper:
- lda prevy
- cmp #72
- jcc :+
- jeq :+
- jmp @done
-: lda py
- cmp #72
- jcc @done
- lda px
- cmp #224
- jcs @done
- cmp #156
- jcc @done
- lda #72
- sta py
- stz vy
- stz jumps
-@done:rts
+.include "movement.s"
 CycleWeapon:
  ldx #12
 @next:

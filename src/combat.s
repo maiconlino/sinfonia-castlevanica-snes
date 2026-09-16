@@ -27,8 +27,6 @@ Interact:
  and #$ff
  sec
  sbc px
- sec
- sbc #8
  jsr Abs
  cmp #22
  jcs @next

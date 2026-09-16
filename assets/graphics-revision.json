@@ -1,0 +1,59 @@
+{
+  "version": "1.1",
+  "hero_frames": 16,
+  "hero_canvas": [
+    32,
+    48
+  ],
+  "hero_dma_bytes": 2048,
+  "regions": [
+    {
+      "region": 0,
+      "tiles": 663,
+      "palette_banks": 8
+    },
+    {
+      "region": 1,
+      "tiles": 781,
+      "palette_banks": 8
+    },
+    {
+      "region": 2,
+      "tiles": 712,
+      "palette_banks": 8
+    },
+    {
+      "region": 3,
+      "tiles": 698,
+      "palette_banks": 8
+    },
+    {
+      "region": 4,
+      "tiles": 730,
+      "palette_banks": 8
+    },
+    {
+      "region": 5,
+      "tiles": 782,
+      "palette_banks": 8
+    },
+    {
+      "region": 6,
+      "tiles": 630,
+      "palette_banks": 8
+    },
+    {
+      "region": 7,
+      "tiles": 718,
+      "palette_banks": 8
+    }
+  ],
+  "portal_tile_range": [
+    128,
+    147
+  ],
+  "secret_tile_range": [
+    148,
+    167
+  ]
+}
