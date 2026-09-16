@@ -1,0 +1,92 @@
+name: Import, verify and release SinfonIA SNES
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/import-and-release.yml']
+permissions:
+  contents: write
+concurrency:
+  group: sinfonia-native-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify and restore source files
+        run: python .source-import/restore.py
+      - name: Prepare pinned compiler and emulator
+        run: |
+          set -eux
+          python -m pip install 'Pillow==12.3.0'
+          git clone --depth 1 --branch V2.19 https://github.com/cc65/cc65.git "$RUNNER_TEMP/cc65"
+          test "$(git -C "$RUNNER_TEMP/cc65" rev-parse HEAD)" = 555282497c3ecf8b313d87d5973093af19c35bd5
+          make -C "$RUNNER_TEMP/cc65" -j4
+          echo "CA65=$RUNNER_TEMP/cc65/bin/ca65" >> "$GITHUB_ENV"
+          echo "LD65=$RUNNER_TEMP/cc65/bin/ld65" >> "$GITHUB_ENV"
+          git clone --depth 1 --branch 1.63 https://github.com/snes9xgit/snes9x.git "$RUNNER_TEMP/snes9x"
+          test "$(git -C "$RUNNER_TEMP/snes9x" rev-parse HEAD)" = 921f9f7b83660eb44ad263022a57a4a029057c37
+          make -C "$RUNNER_TEMP/snes9x/libretro" -j4
+          echo "SNES_CORE=$RUNNER_TEMP/snes9x/libretro/snes9x_libretro.so" >> "$GITHUB_ENV"
+      - name: Reproduce the unmodified original ROM
+        run: |
+          set -eux
+          cd legacy/v1.0
+          python tools/build_content.py
+          python tools/generate_graphics.py
+          python tools/build_audio.py
+          python tools/build.py
+          echo 'cc4aed7fbadcf86426d81bafc3bb8dc9a67199bf2badad0f6e65a8b60be6b5a4  build/sinfonia-castlevanica.sfc' | sha256sum -c -
+      - name: Build and verify the revised native ROM
+        run: |
+          set -eux
+          python tools/build_content.py
+          python tools/refine_graphics.py
+          python tools/build_audio.py
+          python tools/build.py
+          echo '77f4656c28ac17d379255326d9d7287e90460e788fe7980b23d36f9a06afda97  build/sinfonia-castlevanica.sfc' | sha256sum -c -
+          python tests/validate_graphics_v11.py
+          python tests/validate_rom.py
+          python tests/validate_revision.py
+      - name: Prepare distributable ROMs and checksums
+        run: |
+          mkdir -p release/legacy
+          cp build/sinfonia-castlevanica.sfc release/sinfonia-castlevanica-snes-v1.1.smc
+          cp build/sinfonia-castlevanica.sfc release/sinfonia-castlevanica-snes-v1.1.sfc
+          cp build/rom-info.json release/rom-info-v1.1.json
+          cp legacy/v1.0/build/sinfonia-castlevanica.sfc release/legacy/sinfonia-castlevanica-snes-v1.0.smc
+          (cd release && sha256sum *.smc *.sfc legacy/*.smc > SHA256SUMS)
+      - name: Save readable sources, generated assets, tests and ROMs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src tools tests assets docs legacy Makefile lorom.cfg README.md requirements-assets.txt .gitignore release
+          git diff --cached --quiet || git commit -m 'Publish complete SNES v1.1 with improved animation, movement and single composite portals'
+          git push origin HEAD:main
+          git archive --format=zip --prefix=sinfonia-castlevanica-snes/ HEAD -o "$RUNNER_TEMP/sinfonia-castlevanica-snes-v1.1-codigo.zip"
+      - name: Publish a persistent release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > "$RUNNER_TEMP/release-notes.md" <<'EOF'
+          ## Revisão nativa 1.1
+          Portas únicas de 32x40, protagonista de 32x48 com oito poses de corrida, aceleração e frenagem subpixel, salto variável, composição em duas camadas e novos guardas.
+          Fontes da versão 1.0 preservadas em legacy/v1.0 e recompiladas com checksum idêntico ao original.
+          Testes de boot, gráficos, movimento, saltos, áudio, portas e SRAM executados no Snes9x 1.63. Não se afirma uma conclusão integral da campanha 1.1 ou teste em console físico.
+          Abra a ROM .smc diretamente. Save states antigos não devem ser usados com a ROM nova; preserve seu .srm antes de trocar versões.
+          EOF
+          gh release view v1.1 >/dev/null 2>&1 || gh release create v1.1 --target "$(git rev-parse HEAD)" --title 'SinfonIA SNES 1.1: movimento e arte revisados' --notes-file "$RUNNER_TEMP/release-notes.md"
+          gh release upload v1.1 release/*.smc release/*.sfc release/SHA256SUMS "$RUNNER_TEMP/sinfonia-castlevanica-snes-v1.1-codigo.zip" --clobber
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sinfonia-snes-v1.1-release-and-tests
+          path: |
+            release/
+            docs/revision-1.1/
+            ${{ runner.temp }}/sinfonia-castlevanica-snes-v1.1-codigo.zip
+          retention-days: 30
