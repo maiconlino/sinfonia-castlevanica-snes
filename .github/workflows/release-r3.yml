@@ -1,0 +1,127 @@
+name: SinfonIA R3 - compile, emulate and publish
+on:
+  push:
+    branches: ['release/snes-r3']
+    paths: ['.github/workflows/release-r3.yml', '.r3-source/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: sinfonia-release-r3
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore exact reviewed source without replacing unrelated files
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64,hashlib,json,lzma
+          def sha(b): return hashlib.sha256(b).hexdigest()
+          chunks=sorted(Path('.r3-source').glob('part-*.b64'))
+          assert len(chunks)==2
+          compressed=base64.b64decode(''.join(p.read_text().strip() for p in chunks),validate=True)
+          assert sha(compressed)=='883eca9297799ec98700a9c18942f1e6e253d86fb3fa60f9b6199a608cbec8f0', 'Source transport checksum mismatch'
+          files=json.loads(lzma.decompress(compressed))
+          prepared={}
+          for name,change in files.items():
+              p=Path(name)
+              assert not p.is_absolute() and '..' not in p.parts and '.git' not in p.parts
+              if p.is_file() and 'sha256' in change and sha(p.read_bytes())==change['sha256']:
+                  continue
+              if 'text' in change:
+                  text=change['text']
+              else:
+                  old=p.read_text()
+                  assert sha(old.encode())==change['base_sha256'], 'Unexpected baseline: '+name
+                  text=''.join(old[v[0]:v[1]] if isinstance(v,list) else v for v in change['pieces'])
+              if 'sha256' in change:
+                  assert sha(text.encode())==change['sha256'],name
+              prepared[p]=text
+          for p,text in prepared.items():
+              p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
+          print('R3 files restored:',len(prepared))
+          PY
+      - name: Install asset and emulator-test dependencies
+        run: python3 -m pip install -r requirements-assets.txt numpy
+      - name: Fetch and verify native assembler and Snes9x
+        run: |
+          gh run download 35096305893 --repo "$GITHUB_REPOSITORY" --name native-snes-build-tools --dir "$RUNNER_TEMP/snes-tools"
+          cd "$RUNNER_TEMP/snes-tools"
+          sha256sum -c SHA256SUMS
+          chmod +x bin/ca65 bin/ld65
+          echo "$RUNNER_TEMP/snes-tools/bin" >> "$GITHUB_PATH"
+          echo "SNES_CORE=$RUNNER_TEMP/snes-tools/snes9x_libretro.so" >> "$GITHUB_ENV"
+      - name: Regenerate all native assets and reproduce the final R3 ROM
+        run: |
+          make assets all
+          echo 'f2ed7037fb8773cafcad4ddfb42b8c8ef4389302d4e88aaf786a7cf42020a4ec  build/sinfonia-castlevanica.sfc' | sha256sum -c -
+      - name: Check ROM layout, routes, boss graphics, input and frame pacing
+        run: |
+          python3 tests/validate_r3.py
+          python3 tests/regression_r3.py
+      - name: Complete the entire campaign with controller commands
+        run: python3 tests/adaptive_r3.py
+      - name: Replay the recorded buttons independently
+        run: python3 tests/replay_r3.py
+      - name: Capture actual gameplay and all ten boss arenas
+        run: |
+          command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+          python3 tests/capture_r3.py
+      - name: Package source, ROM, reports and gameplay
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,zipfile
+          out=Path('dist');out.mkdir(exist_ok=True)
+          report={}
+          for name in ['hardware','regression','result','replay-result']:
+              report[name]=json.loads(Path('build/qa-r3/'+name+'.json').read_text())
+          (out/'sinfonia-snes-r3-testes.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          files=[Path(n) for n in ['README.md','Makefile','lorom.cfg','requirements-assets.txt','build/labels.json','build/labels.txt','build/rom-info.json','build/rom.map','docs/REVISAO-R3.md']]
+          for folder in ['src','tools','tests','assets','docs/r3','build/qa-r3']:
+              files.extend(p for p in Path(folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ['.pyc','.srm'])
+          files.extend(out.glob('*r3.smc'));files.extend(out.glob('*r3.sfc'));files.append(out/'sinfonia-snes-r3-testes.json')
+          archive=out/'sinfonia-snes-r3-codigo.zip'
+          with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,9) as z:
+              for p in sorted(set(files)):z.write(p,str(p))
+          sums=[]
+          for p in [out/'sinfonia-castlevanica-snes-r3.smc',out/'sinfonia-castlevanica-snes-r3.sfc',archive,out/'sinfonia-snes-r3-testes.json']:
+              sums.append(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name)
+          (out/'SHA256SUMS-R3').write_text('\n'.join(sums)+'\n')
+          PY
+      - name: Commit verified sources and ROM to the R3 branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md Makefile lorom.cfg requirements-assets.txt .gitignore src tools tests assets docs/REVISAO-R3.md docs/r3
+          git add build/qa-r3 build/labels.json build/labels.txt build/rom-info.json build/rom.map
+          git add dist/sinfonia-castlevanica-snes-r3.smc dist/sinfonia-castlevanica-snes-r3.sfc dist/sinfonia-snes-r3-codigo.zip dist/sinfonia-snes-r3-testes.json dist/SHA256SUMS-R3
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish verified R3: automatic edge traversal, uninterrupted input, active enemies and unique bosses'
+            git push origin HEAD:release/snes-r3
+          fi
+      - name: Publish public R3 downloads
+        run: |
+          gh release view r3-20260916 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || gh release create r3-20260916 --repo "$GITHUB_REPOSITORY" --target "$(git rev-parse HEAD)" --title 'SinfonIA SNES R3: passagens pelas bordas e chefes distintos' --notes-file docs/REVISAO-R3.md
+          gh release upload r3-20260916 --repo "$GITHUB_REPOSITORY" dist/sinfonia-castlevanica-snes-r3.smc dist/sinfonia-castlevanica-snes-r3.sfc dist/sinfonia-snes-r3-codigo.zip dist/sinfonia-snes-r3-testes.json dist/SHA256SUMS-R3 docs/r3/sinfonia-snes-r3-jogabilidade.mp4 --clobber
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sinfonia-r3-rom-source-tests
+          path: |
+            dist/*r3*
+            dist/SHA256SUMS-R3
+            build/qa-r3/*.json
+            build/rom-info.json
+            docs/r3/
+          retention-days: 30
