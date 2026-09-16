@@ -1,0 +1,32 @@
+name: Prepare SNES build and test tools
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/toolchain.yml'
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 12
+    steps:
+      - name: Install assembler
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cc65
+          mkdir -p tools-out
+          cp /usr/bin/ca65 /usr/bin/ld65 tools-out/
+          ca65 --version 2> tools-out/cc65-version.txt
+      - name: Build reference emulator
+        run: |
+          git clone --depth 1 --branch 1.63 https://github.com/snes9xgit/snes9x.git /tmp/snes9x
+          make -C /tmp/snes9x/libretro -j2
+          cp /tmp/snes9x/libretro/snes9x_libretro.so tools-out/
+          git -C /tmp/snes9x rev-parse HEAD > tools-out/snes9x-commit.txt
+          cp /tmp/snes9x/LICENSE tools-out/SNES9X-LICENSE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: snes-build-test-tools
+          path: tools-out/
+          retention-days: 7
