@@ -1,6 +1,6 @@
 .segment "DATA"
 .include "data.inc"
-.include "routes.inc"
+.include "edges-r3.inc"
 .segment "OBJ"
 ObjCHR: .incbin "assets/sprites.chr"
 ObjPal: .incbin "assets/sprite_palettes.pal"
@@ -40,30 +40,13 @@ RegionPal:
 .incbin "assets/bg_region5.pal"
 .incbin "assets/bg_region6.pal"
 .incbin "assets/bg_region7.pal"
-BossPalettes: .incbin "assets/boss-palettes.pal"
-.segment "BOSSART0"
-BossArt0: .incbin "assets/boss0-frames.chr"
-.segment "BOSSART1"
-BossArt1: .incbin "assets/boss1-frames.chr"
-.segment "BOSSART2"
-BossArt2: .incbin "assets/boss2-frames.chr"
-.segment "BOSSART3"
-BossArt3: .incbin "assets/boss3-frames.chr"
-.segment "BOSSART4"
-BossArt4: .incbin "assets/boss4-frames.chr"
-.segment "BOSSART5"
-BossArt5: .incbin "assets/boss5-frames.chr"
-.segment "BOSSART6"
-BossArt6: .incbin "assets/boss6-frames.chr"
-.segment "BOSSART7"
-BossArt7: .incbin "assets/boss7-frames.chr"
-.segment "BOSSART8"
-BossArt8: .incbin "assets/boss8-frames.chr"
-.segment "BOSSART9"
-BossArt9: .incbin "assets/boss9-frames.chr"
 .segment "HEADER"
 .byte "SINFONIA CASTLEVANICA"
-.byte $20,$02,$0A,$03,$01,$33,$03
+.byte $20,$02,$0A,$03,$01,$33,$00
 .word $0000,$0000
 .word $0000,$0000,.loword(IRQ),.loword(IRQ),.loword(IRQ),.loword(IRQ),$0000,.loword(IRQ)
 .word $0000,$0000,.loword(IRQ),$0000,.loword(IRQ),.loword(IRQ),.loword(Reset),.loword(IRQ)
+
+.segment "BOSSART"
+BossArtR3: .incbin "assets/bosses-r3.chr"
+BossPalR3: .incbin "assets/bosses-r3.pal"

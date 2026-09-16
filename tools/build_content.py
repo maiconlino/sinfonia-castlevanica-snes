@@ -234,9 +234,9 @@ def compile_content(data: dict, tables: dict | None = None) -> str:
     arr('boss_region', [region_id[b['region']] for b in bosses])
     arr('boss_optional', [int(b['optional']) for b in bosses])
     arr('boss_rewards', [v for b in bosses for v in [item_id[i] for i in b['rewards']] + [NONE] * (3 - len(b['rewards']))], 3)
-    tables['boss_hp'] = [420,620,780,1000,1250,1450,1650,2200,1500,1800]
+    tables['boss_hp'] = [120,160,200,250,300,350,400,560,360,480]
     lines.append('boss_hp:')
-    lines.append('  .word 420,620,780,1000,1250,1450,1650,2200,1500,1800')
+    lines.append('  .word 120,160,200,250,300,350,400,560,360,480')
     lines.append('')
     arr('boss_damage', [8, 10, 12, 14, 16, 18, 20, 24, 20, 22])
     arr('boss_pattern', list(range(10)))

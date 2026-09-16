@@ -96,6 +96,8 @@ DrawGame:
  stz ssize
  stz loopidx
 @each:
+ lda #$30
+ sta sattr
  ldx loopidx
  lda enemyhp,x
  jeq @next
@@ -111,34 +113,34 @@ DrawGame:
  ldx loopidx
  lda enemykind,x
  cmp #1
- jeq @bat_pose
- lda enemymoving,x
- jeq @enemy_facing
- lda frame
- and #8
- jeq @enemy_facing
- inc stile
- inc stile
- jmp @enemy_facing
-@bat_pose:
- lda #1
- sta ssize
- lda frame
- and #4
- jeq @enemy_facing
- lda stile
+ jeq @enemybat
+ lda enemyanim,x
+ lsr
+ lsr
+ lsr
+ and #3
+ asl
  clc
- adc #4
+ adc stile
  sta stile
-@enemy_facing:
- lda #$30
- sta sattr
- lda enemyface,x
+ lda enemyfacing,x
  jeq :+
  lda #$70
  sta sattr
 : jsr AddSprite
+ jmp @enemylower
+@enemybat:
+ lda #1
+ sta ssize
+ lda frame
+ and #8
+ jeq :+
+ lda #76
+ sta stile
+: jsr AddSprite
  stz ssize
+ jmp @next
+@enemylower:
  ldx loopidx
  lda enemykind,x
  cmp #1
@@ -158,8 +160,9 @@ DrawGame:
  lda loopidx
  cmp #8
  jcc @each
- jsr DrawBoss
- jsr DrawHazards
+ lda bosshp
+ jeq @attacks
+ jsr DrawBossR3
 @attacks:
  lda #$30
  sta sattr
@@ -300,6 +303,7 @@ DrawGame:
  lda itemidx
  cmp #3
  jcc @pickup
+ jsr DrawBossShots
  jsr DrawHUD
  rts
 DrawHUD:
@@ -406,12 +410,7 @@ DrawHUD:
  TEXT WarningLine,26,10
 @message:
  lda message
- jne @hasmessage
- lda bosshp
- jne @done
- TEXT Footer1,27,1
- rts
-@hasmessage:
+ jeq @done
  lda messageid
  cmp #1
  jne @locked
@@ -445,11 +444,7 @@ DrawHUD:
  TEXT BossBlockedLine,26,1
  rts
 @died:
- cmp #7
- jne :+
- TEXT LevelLine,26,1
- rts
-: TEXT DeathLine,26,1
+ TEXT DeathLine,26,1
 @done:rts
 EndingScreen:
  jsr Blank
@@ -481,21 +476,21 @@ AudioInit:
  .a16
  rts
 SFX:
- sta soundready
+ sta pending_sfx
  rts
 Music:
  cmp soundarg
- beq @same
+ jeq @same
  sta soundarg
- inc a
- sta soundcmd
+ sta pending_music
 @same:rts
+; Never wait for the audio processor inside a game frame.
 PumpAudio:
  phx
  phy
- lda soundcmd
+ lda pending_music
+ cmp #$ffff
  jeq @sfx
- dec a
  tax
  sep #$20
  .a8
@@ -503,11 +498,13 @@ PumpAudio:
  jsr AudioCommand
  rep #$20
  .a16
- bcs @done
- stz soundcmd
+ jcs @done
+ lda #$ffff
+ sta pending_music
  jmp @done
 @sfx:
- lda soundready
+ lda pending_sfx
+ cmp #$ffff
  jeq @done
  tax
  sep #$20
@@ -516,8 +513,9 @@ PumpAudio:
  jsr AudioCommand
  rep #$20
  .a16
- bcs @done
- stz soundready
+ jcs @done
+ lda #$ffff
+ sta pending_sfx
 @done:
  ply
  plx
@@ -540,22 +538,22 @@ IRQ:
 BitMasks: .word 1,2,4,8
 Decimal: .word 1000,100,10,1
 RegionCHRBank: .word 3,4,5,6,7,8,9,10
-EnemyTiles: .word 192,72,196,200
+EnemyTiles: .word 192,72,200,384
 BossTiles: .word 256,260,264,268,320,324,328,332,384,388
 OrbitX: .word 32,30,24,12,0,65524,65512,65506,65504,65506,65512,65524,0,12,24,30
 OrbitY: .word 12,24,36,42,44,42,36,24,12,0,65526,65520,65518,65520,65526,0
 FormNames: .byte "HUMANO",0,0,"LOBO",0,0,0,0,"MORCEGO",0,"NEVOA",0,0,0
 Title1: .asciiz "SINFONIA"
 Title2: .asciiz "CASTLEVANICA"
-Title3: .asciiz "FUTURISTICA"
+Title3: .asciiz "FUTURISTICA R3"
 HeroLine: .asciiz "AUREL VESPER"
-StartLine: .asciiz "START: NOVO JOGO R3"
+StartLine: .asciiz "START: NOVO JOGO"
 ContinueLine: .asciiz "SELECT: CONTINUAR SRAM"
 Controls1: .asciiz "Y ESPADA  B SALTO  A MAGIA"
 Controls2: .asciiz "X POCAO L ESQUIVA R ESPADA"
 Controls3: .asciiz "SELECT FORMA START MENU"
 CreditsLine: .asciiz "MAICON LINO / ASTRA  2026"
-Footer1: .asciiz "LATERAIS: PASSAR  CIMA: SALVAR"
+Footer1: .asciiz "BORDAS: SAIR / CIMA: SALVAR"
 HpLabel: .asciiz "V:"
 MpLabel: .asciiz "M:"
 LvLabel: .asciiz "N:"
@@ -565,7 +563,6 @@ SecretLine: .asciiz "PASSAGEM SECRETA REVELADA!"
 SavedLine: .asciiz "CURADO E SALVO NO CARTUCHO"
 BossBlockedLine: .asciiz "DERROTE O GUARDIAO PRIMEIRO"
 DeathLine: .asciiz "SEU ECO RETORNA AO ALTAR"
-LevelLine: .asciiz "NIVEL +1! VIDA E FORCA MAIORES"
 WarningLine: .asciiz "ATAQUE! ESQUIVE!"
 Ending1: .asciiz "O PRIMEIRO AMANHECER"
 Ending2: .asciiz "O REGENTE NULO SILENCIOU."
@@ -584,8 +581,6 @@ SelectHeroFrame:
  jne @done
  lda dash
  jne @dash
- lda vx
- jne @air
  lda attack
  jeq @air
  cmp #6
@@ -613,8 +608,13 @@ SelectHeroFrame:
  lda vx
  jeq @idle
  lda walkphase
- xba
- and #$ff
+ lsr
+ lsr
+ lsr
+ lsr
+ lsr
+ lsr
+ lsr
  lsr
  lsr
  lsr

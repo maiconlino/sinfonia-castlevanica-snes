@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "controller_only": true,
+  "ram_writes": false,
+  "rooms": [
+    0,
+    1,
+    2,
+    4,
+    6,
+    7
+  ],
+  "first_boss_defeated": true,
+  "double_jump_reward": true,
+  "bronze_crest_reward": true,
+  "kills": 8,
+  "level": 3,
+  "xp": 30,
+  "audio_nonzero": true,
+  "emulated_frames": 883,
+  "rom_sha256": "70c0cffe1840e218715d4b27721bec689c0f1141b95496d9a7d786ea045a8f3e"
+}

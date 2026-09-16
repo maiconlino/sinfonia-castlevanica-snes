@@ -81,14 +81,14 @@ MovePlayer:
  jeq @integrate_x
  jmi @friction_left
  sec
- sbc #$00c0
+ sbc #$0100
  jpl :+
  lda #0
 : sta vx
  jmp @integrate_x
 @friction_left:
  clc
- adc #$00c0
+ adc #$0100
  jmi :+
  lda #0
 : sta vx
@@ -102,7 +102,7 @@ MovePlayer:
  sta t1
  lda vx
  sec
- sbc #$00c0
+ sbc #$0100
  cmp t1
  jpl :+
  lda t1
@@ -112,7 +112,7 @@ MovePlayer:
  stz face
  lda vx
  clc
- adc #$00c0
+ adc #$0100
  cmp t0
  jmi :+
  lda t0
@@ -124,28 +124,15 @@ MovePlayer:
  ora xsub
  clc
  adc vx
- ; Signed carry-safe boundary clamping; never wraps left to the right side.
- sta t2
- lda vx
- jpl @positive_x
- lda t2
- cmp #$f800
- jcc @clamp_right
- lda #0
- sta t2
+ cmp #$0800
+ jcs :+
+ lda #$0800
  stz vx
- jmp @store_x
-@positive_x:
- lda t2
-@clamp_right:
- cmp #$f000
- jcc @store_x
- lda #$f000
- sta t2
+: cmp #$e800
+ jcc :+
+ lda #$e800
  stz vx
-@store_x:
- lda t2
- pha
+: pha
  and #$00ff
  sta xsub
  pla
@@ -153,6 +140,7 @@ MovePlayer:
  and #$00ff
  sta px
  lda vx
+ jeq @jump
  jsr Abs
  clc
  adc walkphase
@@ -243,7 +231,6 @@ MovePlayer:
  sta py
  jsr LandPlayer
 @platforms:
- jsr LandEdgeLedges
  lda form
  cmp #2
  jcs @done
@@ -283,10 +270,11 @@ MovePlayer:
  cmp #72
  jcc @done
  lda px
- cmp #224
- jcs @done
+ cmp #40
+ jcc @upperland
  cmp #156
  jcc @done
+@upperland:
  lda #72
  sta py
  jsr LandPlayer

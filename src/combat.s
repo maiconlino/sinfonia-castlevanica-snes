@@ -1,16 +1,15 @@
 .a16
 .i16
 Interact:
- ; Cima is exclusively for the sanctuary altar, never for changing a room.
  lda bosshp
  jne @done
+ lda py
+ cmp #132
+ jcc @done
  ldx room
  lda f:room_type,x
  and #1
  jeq @done
- lda py
- cmp #132
- jcc @done
  lda px
  sec
  sbc #110
@@ -273,6 +272,7 @@ SwordAttack:
  sta attack
  lda #1
  jsr SFX
+ ; Secrets are revealed at their physical side opening, not at old door x positions.
  jsr RevealEdgeSecret
 @targets:
  lda #0
@@ -312,12 +312,8 @@ SwordAttack:
  lda bosshp
  jeq @projectile
  lda bossx
- clc
- adc #24
  sta t0
- lda bosssy
- clc
- adc #20
+ lda bossy
  sta t1
  jsr SwordRange
  jcc @projectile
@@ -377,7 +373,7 @@ SwordRange:
  sec
  sbc py
  jsr Abs
- cmp #34
+ cmp #48
  jcs @no
  lda t0
  sec
@@ -418,8 +414,8 @@ HitEnemy:
  jcc @dead
  jeq @dead
  sta enemyhp,x
- lda #12
- sta enemyhurt,x
+ lda #6
+ sta enemystun,x
  rts
 @dead:
  stz enemyhp,x
@@ -444,10 +440,6 @@ HitEnemy:
  jsr Recalculate
  lda maxhp
  sta hp
- lda #7
- sta messageid
- lda #120
- sta message
 @done:rts
 HitBoss:
  pha
@@ -470,7 +462,13 @@ HitBoss:
 @dead:
  stz bosshp
  stz bulletlife
- jsr ClearHazards
+ ldx #0
+@clearshots:
+ stz bplife,x
+ inx
+ inx
+ cpx #16
+ jne @clearshots
  lda boss
  asl
  tax
@@ -639,7 +637,9 @@ StartShot:
  lda #$fffb
  sta shotdx
 @done:rts
-.include "enemies.s"
+.include "enemies_r3.s"
+UpdateBoss:
+ jmp UpdateBossR3
 UpdateProjectiles:
  lda bulletlife
  jeq @shot
@@ -727,8 +727,9 @@ UpdateProjectiles:
  jcs @done
  lda shoty
  sec
- sbc bosssy
- cmp #64
+ sbc bossy
+ jsr Abs
+ cmp #52
  jcs @done
  lda shotdamage
  jsr HitBoss
@@ -800,6 +801,7 @@ HurtPlayer:
  jsr SFX
 @done:rts
 PlayerDied:
+ stz form
  inc deaths
  lda checkpoint
  sta room

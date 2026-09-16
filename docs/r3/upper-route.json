@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "controller_only": true,
+  "ram_writes": false,
+  "upper_right_route": "C05 -> C06",
+  "required_up_button": false,
+  "new_sword": "Rapieira Lunar",
+  "equipped_with": "R"
+}

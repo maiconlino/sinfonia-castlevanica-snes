@@ -143,39 +143,37 @@ enemyy: .res 8
 enemyhp: .res 8
 enemycool: .res 8
 enemykind: .res 8
-
+; R3 transient fields do not alter battery-save offsets.
 mapdirty: .res 2
+pending_music: .res 2
+pending_sfx: .res 2
+enterededge: .res 2
 edgecool: .res 2
-edgearrival: .res 2
-edgeslot: .res 2
-edgechosen: .res 2
-edgefrom: .res 2
-arrivalform: .res 2
-arrivalvx: .res 2
-bosssy: .res 2
-bossmove: .res 2
-bossdx: .res 2
-bossdy: .res 2
-bossaim: .res 2
-bossanim: .res 2
-bossloaded: .res 2
-bossrow: .res 2
-bossaction: .res 2
-bossage: .res 2
-hazindex: .res 2
-hazx: .res 16
-hazy: .res 16
-hazdx: .res 16
-hazdy: .res 16
-hazlife: .res 16
-hazkind: .res 16
-hazage: .res 16
+entryside: .res 2
+entryheight: .res 2
+carryvx: .res 2
+carryform: .res 2
+edge_active: .res 2
 enemyfrac: .res 8
-enemyface: .res 8
-enemywindup: .res 8
-enemyhurt: .res 8
-enemymoving: .res 8
-logicalframes: .res 2
+enemyfacing: .res 8
+enemyanim: .res 8
+enemystun: .res 8
+bossy: .res 2
+bossaction: .res 2
+bossmove: .res 2
+bossdir: .res 2
+bossage: .res 2
+bosswarnx: .res 2
+bosswarn: .res 2
+bossrow: .res 2
+bossquad: .res 2
+projectileidx: .res 2
+bpx: .res 16
+bpy: .res 16
+bpdx: .res 16
+bpdy: .res 16
+bplife: .res 16
+bpstyle: .res 16
 
 .segment "CODE"
 .a8
@@ -247,6 +245,9 @@ Reset:
  sta $2132
  rep #$20
  .a16
+ lda #$ffff
+ sta pending_music
+ sta pending_sfx
  jsr AudioInit
  jsr LoadObjects
  lda #$ffff
@@ -260,17 +261,18 @@ Reset:
  sta mode
  sep #$20
  .a8
- stz $4200 ; manual joypad polling, no auto-read race
+ lda #1
+ sta $4200
  lda #15
  sta $2100
  rep #$20
  .a16
 MainLoop:
  jsr WaitFrame
- jsr UploadFrame
  jsr ReadPad
- jsr PumpAudio
+ jsr UploadFrame
  inc frame
+ jsr PumpAudio
  lda mode
  jeq TitleTick
  cmp #2
@@ -297,6 +299,7 @@ TitleTick:
  lda pressed
  and #(JOY_START|JOY_A|JOY_B)
  jeq Present
+ stz form
  jsr NewGame
  jmp Present
 MenuTick:
@@ -325,32 +328,15 @@ WaitFrame:
  jmi @out
 @in: lda $4212
  jpl @in
+@joy: lda $4212
+ and #1
+ jne @joy
  rep #$20
  .a16
  rts
 ReadPad:
- ; Read the actual held buttons, not key-repeat events. Auto-joypad is disabled.
- ; The old routine could read $4218 before automatic polling had even started.
- stz pad
- sep #$20
- .a8
- lda #1
- sta $4016
- stz $4016
- ldx #16
-@bit:
- lda $4016
- lsr a
- rep #$20
- .a16
- rol pad
- sep #$20
- .a8
- dex
- bne @bit
- rep #$20
- .a16
- lda pad
+ lda $4218
+ sta pad
  eor oldpad
  and pad
  sta pressed
@@ -386,51 +372,35 @@ UploadFrame:
  sta $2115
  rep #$20
  .a16
- rep #$20
- .a16
+ lda #MAP
+ sta src
+ stz src+2
+ lda #$6000
+ sta t1
  lda mode
  cmp #1
  jne @fullmap
  lda mapdirty
  jne @fullmap
- lda #$6000
- sta t1
- lda #MAP
- sta src
- stz src+2
  lda #256
  sta t0
  jsr DMAVRAM
- lda #$6000+22*32
- sta t1
- lda #MAP+22*64
+ lda #(MAP+22*64)
  sta src
- lda #64
+ lda #($6000+22*32)
+ sta t1
+ lda #384
  sta t0
  jsr DMAVRAM
- lda #$6000+25*32
- sta t1
- lda #MAP+25*64
- sta src
- lda #192
- sta t0
- jsr DMAVRAM
- jmp @dynamic
+ jmp @hero
 @fullmap:
- lda #$6000
- sta t1
- lda #MAP
- sta src
- stz src+2
  lda #2048
  sta t0
  jsr DMAVRAM
  stz mapdirty
-@dynamic:
+@hero:
  jsr UploadHero
- jsr UploadBoss
  rts
-
 Blank:
  sep #$20
  .a8
@@ -794,6 +764,7 @@ NewGame:
  sta hp
  lda maxmp
  sta mp
+ stz form
  lda #80
  sta px
  lda #152
@@ -803,27 +774,16 @@ NewGame:
 Recalculate:
  lda level
  asl
- sta t0
  asl
  clc
- adc t0
- asl
- clc
- adc #128
+ adc #116
  sta maxhp
- lda level
- asl
- clc
- adc level
- clc
- adc #97
+ lda #80
  sta maxmp
  lda accessory
  cmp #22
  jne @mana
- lda maxmp
- clc
- adc #20
+ lda #100
  sta maxmp
 @mana:
  ldx weapon
@@ -861,14 +821,19 @@ Recalculate:
 @done:rts
 EnterRoom:
  jsr Blank
- lda #1
- sta mapdirty
- lda #$ffff
- sta bossloaded
- stz bossanim
+ stz edgecool
+ stz enterededge
  stz bossage
+ stz bossaction
  stz bossmove
- jsr ClearHazards
+ stz bosswarn
+ ldx #0
+@clearr3:
+ stz bplife,x
+ inx
+ inx
+ cpx #16
+ jne @clearr3
  stz vx
  stz xsub
  stz ysub
@@ -879,7 +844,6 @@ EnterRoom:
  lda #1
  sta grounded
  lda #0
- sta form
  sta vy
  sta jumps
  sta attack
@@ -898,7 +862,6 @@ EnterRoom:
  sta px
  lda #152
  sta py
- jsr ApplyEdgeArrival
  ldx room
  lda f:room_region,x
  and #$ff
@@ -930,10 +893,11 @@ EnterRoom:
  sta bossmax
  lda #184
  sta bossx
- lda #120
- sta bosssy
+ lda #136
+ sta bossy
  lda #100
  sta bosstimer
+ jsr LoadBossArt
  lda #0
  sta bosscycle
  sta bossphase
@@ -945,23 +909,18 @@ EnterRoom:
  sta mp
 @normal:
  jsr SpawnEnemies
- jsr LoadBossPalette
- jsr RoomMap
+ lda edge_active
+ jeq :+
+ jsr ApplyEdgeSpawn
+: jsr RoomMap
  jsr RoomMusic
  jsr DrawGame
- jsr UploadHero
- jsr UploadBoss
  jsr Unblank
  rts
 SpawnEnemies:
  ldx #0
  lda #0
-@clear: sta enemyfrac,x
- sta enemyface,x
- sta enemywindup,x
- sta enemyhurt,x
- sta enemymoving,x
- sta enemyhp,x
+@clear: sta enemyhp,x
  inx
  inx
  cpx #8
@@ -994,18 +953,21 @@ SpawnEnemies:
  sta enemyy,x
  lda region
  asl
- asl
  clc
- adc #36
+ adc #24
  sta enemyhp,x
  lda #50
  sta enemycool,x
  txa
  lsr
  clc
- adc region
+ adc room
  and #3
  sta enemykind,x
+ stz enemyfrac,x
+ stz enemyfacing,x
+ stz enemyanim,x
+ stz enemystun,x
  inx
  inx
  dec t0
@@ -1057,7 +1019,25 @@ RoomMap:
  inx
  dey
  jne @pl2
- jsr DrawEdgePassages
+ ; Upper galleries reach both side exits without pressing an interaction key.
+ ldx #(13*64)
+ ldy #5
+@leftgallery:
+ lda #97
+ sta MAP,x
+ inx
+ inx
+ dey
+ jne @leftgallery
+ ldx #(13*64+28*2)
+ ldy #4
+@rightgallery:
+ sta MAP,x
+ inx
+ inx
+ dey
+ jne @rightgallery
+ jsr DrawEdgeExits
  ldx room
  lda f:room_type,x
  and #1
@@ -1090,9 +1070,9 @@ RoomMap:
  sta textpos
  lda room
  jsr NameRoom
+ TEXT Footer1,27,1
  rts
 GameTick:
- inc logicalframes
  lda pressed
  and #JOY_START
  jeq @play
@@ -1105,10 +1085,7 @@ GameTick:
  jsr MenuScreen
  rts
 @play:
- lda edgecool
- jeq :+
- dec edgecool
-: jsr TickTimers
+ jsr TickTimers
  jsr Recalculate
  lda pressed
  and #JOY_R
@@ -1126,7 +1103,9 @@ GameTick:
  jsr UsePotion
 @move:
  jsr MovePlayer
- jsr CheckScreenEdges
+ jsr CheckEdgeExit
+ lda enterededge
+ jne @done
  lda pressed
  and #JOY_UP
  jeq @combat
@@ -1148,12 +1127,17 @@ GameTick:
  jsr UpdateEnemies
  jsr UpdateBoss
  jsr UpdateProjectiles
+ jsr UpdateBossShots
  jsr CollectItems
  lda hp
  jne @done
  jsr PlayerDied
 @done:rts
 TickTimers:
+ lda edgecool
+ jeq :+
+ dec edgecool
+: stz enterededge
  ldx #inv
 @timer:
  ; Timers are intentionally updated explicitly, never across non-timer fields.
@@ -1274,9 +1258,9 @@ CycleForm:
  jsr SFX
  rts
 
-.include "traversal.s"
+.include "edges_r3.s"
+.include "bosses_r3.s"
 .include "combat.s"
-.include "bosses.s"
 .include "render.s"
 .include "menu_save.s"
 .include "audio.s"
