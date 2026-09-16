@@ -1,0 +1,71 @@
+name: Import and verify native SinfonIA game
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/import-native-game.yml']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: native-source-import
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-snes-build-tools
+          run-id: 35096305893
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/native-tools
+      - name: Prepare pinned native tools and asset dependencies
+        run: |
+          chmod +x "$RUNNER_TEMP/native-tools/bin/ca65" "$RUNNER_TEMP/native-tools/bin/ld65"
+          echo "CA65=$RUNNER_TEMP/native-tools/bin/ca65" >> "$GITHUB_ENV"
+          echo "LD65=$RUNNER_TEMP/native-tools/bin/ld65" >> "$GITHUB_ENV"
+          echo "SNES_CORE=$RUNNER_TEMP/native-tools/snes9x_libretro.so" >> "$GITHUB_ENV"
+          python -m pip install Pillow==12.3.0 numpy==2.3.5
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Preserve original native source and verify original ROM
+        run: python .github/import_native.py baseline
+      - name: Apply native revision and verify identical release ROM
+        run: python .github/import_native.py revision
+      - name: Test controller motion, doors, cadence and SRAM
+        run: python tests/revision_motion.py
+      - name: Complete campaign using controller input only
+        run: python tests/play_revision.py
+      - name: Record tested release and publish complete source
+        run: |
+          python .github/import_native.py finish
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sinfonia-native-v1.1-source-and-rom
+          path: |
+            README.md
+            Makefile
+            lorom.cfg
+            requirements-assets.txt
+            src/
+            tools/
+            assets/
+            docs/
+            tests/*.py
+            tests/*.json
+            tests/results-v1.1/*.json
+            tests/results-v1.1/*.png
+            tests/results-v1.1/*.gif
+            dist/
+            build/sinfonia-castlevanica.sfc
+            build/labels.json
+            build/rom-info.json
+          retention-days: 30
